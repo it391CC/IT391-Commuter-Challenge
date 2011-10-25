@@ -16,6 +16,7 @@
  * Author: Eric Bidelman <e.bidelman>
  */
 
+//Google Session
 session_start();
 
 // //Twitter PHP Class
@@ -63,6 +64,7 @@ $openid_ext = array('openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.
 //   'openid.oauth.scope'       => implode(' ', $scopes),*/
 	'openid.ui.icon' => 'true');
 
+//Google API Code
 if (isset($_REQUEST['popup']) && !isset($_SESSION['redirect_to'])) {
 	$query_params = '';
 	if ($_POST) {
@@ -155,7 +157,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 		<script type="text/javascript" src="popuplib.js"></script>
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
 		<script type="text/javascript">
-			var upgradeToken = function() {
+						var upgradeToken = function() {
 window.location = '<?php echo $_SESSION['redirect_to'] ?>
 	';
 	};
@@ -264,16 +266,16 @@ var googleOpener = popupManager.createPopupOpener({
 				<div id="menu">
 					<ul>
 						<li>
-							<a href="index.html" id="active">Home</a>
+							<a href="index.php" id="active">Home</a>
 						</li>
 						<li>
-							<a href="profile.html">Profile</a>
+							<a href="profile.php">Profile</a>
 						</li>
 						<li>
 							<a href="./">Challenges</a>
 						</li>
 						<li>
-							<a href="commutes.html">Commutes</a>
+							<a href="commutes.php">Commutes</a>
 						</li>
 						<li>
 							<a href="./">About</a>
@@ -308,10 +310,10 @@ var googleOpener = popupManager.createPopupOpener({
 					<!-- Facebook/Google will already handle this
 					<h3>Login (Not a user? <a href="./">Register</a>)</h3> -->
 					<div id="facebooklogin">
-						<?php if (!$fbme){
+						<p class="testimonial">
+						<?php if (!$fbme):
 						?>
 						<!-- Facebook Login Button-->
-						<p class="testimonial">
 							<a href='#' id='login' class='customLoginLink'><img src="images/facebook_icon.jpg" alt="Facebook Icon" width="87" height="100"/></a>
 							<!-- Facebook Login Script -->
 							<script type='text/javascript'>
@@ -326,24 +328,29 @@ var googleOpener = popupManager.createPopupOpener({
 								});
 
 							</script>
-							<?php }?>
-							<?php if ($fbme){
-							?>
+							<?php else:?>
 							<!-- Facebook Logout Button-->
-							<p class="testimonial">
 							<a href='#' id='logout' class='customLoginLink'><img src="images/facebook_icon.jpg" alt="Facebook Icon" width="87" height="100"/></a>
 							<script type='text/javascript'>
 								$('#logout').click(function(event) {
 									FB.logout(function(response) {
 									});
 								});
+
 							</script>
-							<?php }?>
+							<?php endif;?>
+							</p>
 					</div>
 					<div id="googlelogin">
 						<p class="testimonial">
-							<a href="<?php echo $_SERVER['PHP_SELF'] . '?openid_mode=checkid_setup&openid_identifier=google.com/accounts/o8/id' ?>" id="LoginWithGoogleLink"><span class="google"><img src="images/google_icon.jpg" alt="Google Icon" width="87" height="100" /></a>
-						</p>
+						<?php if(@$_REQUEST['openid_mode'] === 'id_res'): ?>
+							<a href="http://limbotestserver.com"
+    						onclick="myIFrame.location='https://www.google.com/accounts/Logout';StartPollingForCompletion();return false;">
+   						<img src="images/google_icon.jpg"/></a>
+						<?php else:?>
+					<a href="<?php echo $_SERVER['PHP_SELF'] . '?openid_mode=checkid_setup&openid_identifier=google.com/accounts/o8/id' ?>" id="LoginWithGoogleLink"><span class="google"><img src="images/google_icon.jpg" /></a>
+					<?php endif;?>
+					</p>
 					</div>
 					<br/>
 					<br/>
@@ -354,7 +361,7 @@ var googleOpener = popupManager.createPopupOpener({
 					<div class="Ctopright"></div>
 					<div id="cB1">
 						<div class="news">
-							<?php if(!@$_REQUEST['openid_mode'] === 'id_res' || !$fbme) {
+							<?php if(@$_REQUEST['openid_mode'] !== 'id_res' && !$fbme) {
 							?>
 							<h3>Welcome to the GREEN COMMUTE CHALLENGE!</h3>
 							<p>
@@ -382,7 +389,7 @@ var googleOpener = popupManager.createPopupOpener({
 							</p>
 							<?php }?>
 
-							<?php if(@$_REQUEST['openid_mode'] === 'id_res' || $fbme) {
+							<?php if(@$_REQUEST['openid_mode'] === 'id_res') {
 							?>
 
 							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
@@ -391,6 +398,9 @@ var googleOpener = popupManager.createPopupOpener({
 							<br/>
 							<br/>
 							<br/>
+							<?php }?>
+							<?php if ($fbme){
+							?>
 							You are currently logged into Facebook <!-- Display user name-->
 							<?php
 							foreach ($userInfo as $result) {
@@ -459,5 +469,7 @@ var googleOpener = popupManager.createPopupOpener({
 				</div><!-- foot1 -->
 			</div><!-- foot -->
 		</div><!-- footer -->
+		<!-- needed to log out of google -->
+			<iframe id="myIFrame" width="0" height="0" ></iframe>
 	</body>
 </html>
