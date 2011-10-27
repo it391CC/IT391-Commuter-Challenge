@@ -597,7 +597,9 @@ var googleOpener = popupManager.createPopupOpener({
 				</div><!-- foot1 -->
 			</div><!-- foot -->
 		</div><!-- footer -->
+		
 		<!-- needed to log out of google -->
 		<iframe id="myIFrame" width="0" height="0" ></iframe>
+		
 	</body>
 </html>
