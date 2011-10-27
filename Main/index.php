@@ -1,4 +1,7 @@
 <?php
+
+// copyright notice for Google Oauth/OpenID code
+
 /* Copyright (c) 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +22,30 @@
 //Google Session
 session_start();
 
-// //Twitter PHP Class
+//Connect To Database
+$hostname='it391test.db.8404538.hostedresource.com';
+$username='it391test';
+$password='Binoy01';
+$dbname='it391test';
+$usertable='usercomp';
+$yourfield = 'mileage';
+
+mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
+mysql_select_db($dbname);
+
+//Example Query
+
+// $query = 'SELECT * FROM ' . $usertable;
+// $result = mysql_query($query);
+// if($result) {
+    // while($row = mysql_fetch_array($result)){
+        // $name = $row[$yourfield];
+        // echo 'Name: ' . $name;
+    // }
+// }
+
+// //Twitter PHP Class (uncomment to use)
+
 // //http://code.google.com/p/twitter-php/
 // $consumerKey = 'o3dsmxU8Eh4pNe9ca2nhtQ';
 // $consumerSecret = 'GF02LPeBdb2Ea1LpHdjjPkqqriBvTV0nS5qoXA5Y';
@@ -34,17 +60,19 @@ session_start();
 
 require_once 'common.inc.php';
 
-// Load the necessary Zend Gdata classes.
+// Load the necessary Zend Gdata classes for Google login.
+
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_HttpClient');
 
-// Setup OAuth consumer with our "credentials"
+// Setup OAuth consumer with our "credentials" for Google login
+
 $CONSUMER_KEY = 'limbotestserver.com';
 $CONSUMER_SECRET = 'NAXXzJLbe6PQTuRszF2rvXpi';
 $consumer = new OAuthConsumer($CONSUMER_KEY, $CONSUMER_SECRET);
 $sig_method = $SIG_METHODS['HMAC-SHA1'];
 
-// Define scope of what google can access
+// Define scope of what google can access, uncomment to use
 
 // $scopes = array(
 //   'http://docs.google.com/feeds/',*/
@@ -62,9 +90,11 @@ $openid_ext = array('openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.
 
 // uncomment if declaring scope above
 //   'openid.oauth.scope'       => implode(' ', $scopes),*/
+
 	'openid.ui.icon' => 'true');
 
-//Google API Code
+//Google API Pop Up Window phCode 
+
 if (isset($_REQUEST['popup']) && !isset($_SESSION['redirect_to'])) {
 	$query_params = '';
 	if ($_POST) {
@@ -146,6 +176,7 @@ function getAccessToken($request_token_str) {
 	return $access_token;
 }
 ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 xmlns:fb="http://www.facebook.com/2008/fbml">
@@ -153,11 +184,19 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Green Commute Challenge</title>
 		<link rel="stylesheet" href="style.css" />
+		
+		<!-- import jquery -->
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		
+		<!-- pop up window library (from Google) -->
 		<script type="text/javascript" src="popuplib.js"></script>
+		
+		<!-- import for Facebook connect -->
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
+		
+		<!-- Script to pop up google login window -->
 		<script type="text/javascript">
-						var upgradeToken = function() {
+			var upgradeToken = function() {
 window.location = '<?php echo $_SESSION['redirect_to'] ?>
 	';
 	};
@@ -193,6 +232,9 @@ var googleOpener = popupManager.createPopupOpener({
 				}
 			}
 		</script>
+		<!-- End Google pop up window script -->
+		
+		<!-- Facebook PHP Code-->
 		<?php
 		include_once "fbmain.php";
 		$config['baseurl'] = "http://limbotestserver.com/";
@@ -201,10 +243,39 @@ var googleOpener = popupManager.createPopupOpener({
 		if ($fbme) {
 			//Query to get user name
 			try {
-				$fql = "SELECT name FROM user WHERE uid=" . $uid;
+				$fql = "SELECT name,first_name,last_name,email FROM user WHERE uid=" . $uid;
 				$param = array('method' => 'fql.query', 'query' => $fql, 'callback' => '');
 				$userInfo = $facebook -> api($param);
+				//Query to get user id (should be ammended to use a single query)
+				foreach ($userInfo as $result) {
+					$email = $result['email'];
+					$firstname = $result['first_name'];
+					$lastname = $result['last_name'];
+				}
+				$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
+				$result = mysql_query($query);
+				if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+						$id = $row['userid'];
+						$registered = true;
 
+					}
+					
+			// Add User (uses random number for  id currently, needs to be fixed)
+					if (isset($_POST['first'])) {
+						$first = $_POST['first'];
+						$last = $_POST['last'];
+						$phone = $_POST['phone'];
+						$age = $_POST['age'];
+						$weight = $_POST['weight'];
+						$prefemail = $_POST['email'];
+
+						$query = 'INSERT INTO USER VALUES(' . rand() . ',"' . $last . '","' . $first . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ')';
+						echo $query;
+						$result = mysql_query($query);
+						$registered = true;
+					}
+				}
 			} catch(Exception $o) {
 				d($o);
 			}
@@ -212,13 +283,15 @@ var googleOpener = popupManager.createPopupOpener({
 		}
 
 		// Add status using graph api
-		if (isset($_POST['status'])) {
-
-			$statusUpdate = $facebook -> api('/me/feed', 'post', array('message' => $_POST['status']));
-		}
+		// if (isset($_POST['status'])) {
+		//
+		// $statusUpdate = $facebook -> api('/me/feed', 'post', array('message' => $_POST['status']));
+		// }
+		//
 		?>
 
 		<!-- Begining of Facebook Scripts -->
+		<div id="fb-root"></div>
 		<script>
 			FB.init({
 				appId : '110603805686133',
@@ -257,6 +330,8 @@ var googleOpener = popupManager.createPopupOpener({
 		</script>
 		<!-- End of Facebook Scripts -->
 	</head>
+	
+	<!-- document body -->
 	<body>
 		<div id="daddy">
 			<div id="header">
@@ -268,6 +343,12 @@ var googleOpener = popupManager.createPopupOpener({
 						<li>
 							<a href="index.php" id="active">Home</a>
 						</li>
+						
+						<!-- rendered if logged in and registered -->
+						<?php if ($fbme || @$_REQUEST['openid_mode'] == 'id_res'){
+						?>
+						<?php if ($registered){
+						?>
 						<li>
 							<a href="profile.php">Profile</a>
 						</li>
@@ -277,6 +358,10 @@ var googleOpener = popupManager.createPopupOpener({
 						<li>
 							<a href="commutes.php">Commutes</a>
 						</li>
+						<?php }?>
+						<?php }?>
+						<!-- end conditional render -->
+						
 						<li>
 							<a href="./">About</a>
 						</li>
@@ -286,11 +371,6 @@ var googleOpener = popupManager.createPopupOpener({
 					</ul>
 				</div><!-- menu -->
 				<div id="headerimage">
-					<div id="icons">
-						<a href="./" ><img src="images/icon_home.gif" alt="Home" width="13" height="13" id="home" /></a>
-						<a href="./"><img src="images/icon_sitemap.gif" alt="Sitemap" width="13" height="13" id="sitemap" /></a>
-						<a href="./"><img src="images/icon_contact.gif" alt="Contact" width="13" height="13" id="contact" /></a>
-					</div><!-- icons -->
 					<div id="slogan"></div>
 				</div>
 				<!-- headerimage -->
@@ -299,36 +379,43 @@ var googleOpener = popupManager.createPopupOpener({
 			<div id="content">
 				<div id="cA">
 					<div class="Ctopleft"></div>
-					<h3>SEARCH</h3>
+					
+					<!-- uneeded search -->
+					<!--<h3>SEARCH</h3>
 					<div id="search">
 						<input type="text" class="search" />
 						<input type="submit" class="submit" value="Find" />
-					</div><!-- search -->
-					<p>
-						&nbsp;
-					</p>
-					<!-- Facebook/Google will already handle this
-					<h3>Login (Not a user? <a href="./">Register</a>)</h3> -->
+					</div> search -->
+	
 					<div id="facebooklogin">
 						<p class="testimonial">
-						<?php if (!$fbme):
-						?>
-						<!-- Facebook Login Button-->
+							<!-- rendered if user is not logged in -->
+							<?php if (!$fbme):
+							?>
+							<!-- Facebook Login Button-->
 							<a href='#' id='login' class='customLoginLink'><img src="images/facebook_icon.jpg" alt="Facebook Icon" width="87" height="100"/></a>
-							<!-- Facebook Login Script -->
 							<script type='text/javascript'>
 								$('#login').click(function(event) {
 									FB.login(function(response) {
 										if(response.session) {
-											// user successfully logged in
+											if(response.perms) {
+												// user is logged in and granted some permissions.
+												// perms is a comma separated list of granted permissions
+											} else {
+												// user is logged in, but did not grant any permissions
+											}
 										} else {
-											// user cancelled login
+											// user is not logged in
 										}
+									}, {
+										perms : 'publish_stream, read_stream, email, user_birthday'
+										//permissions granted by user
 									});
 								});
 
 							</script>
 							<?php else:?>
+								
 							<!-- Facebook Logout Button-->
 							<a href='#' id='logout' class='customLoginLink'><img src="images/facebook_icon.jpg" alt="Facebook Icon" width="87" height="100"/></a>
 							<script type='text/javascript'>
@@ -336,21 +423,24 @@ var googleOpener = popupManager.createPopupOpener({
 									FB.logout(function(response) {
 									});
 								});
-
 							</script>
+							<!-- end conditional render -->
 							<?php endif;?>
-							</p>
+						</p>
 					</div>
 					<div id="googlelogin">
 						<p class="testimonial">
-						<?php if(@$_REQUEST['openid_mode'] === 'id_res'): ?>
+							<!-- rendered if user is logged into Google --> 
+							<?php if(@$_REQUEST['openid_mode'] === 'id_res'):
+							?>
+							<!-- Google log out button -->
 							<a href="http://limbotestserver.com"
-    						onclick="myIFrame.location='https://www.google.com/accounts/Logout';StartPollingForCompletion();return false;">
-   						<img src="images/google_icon.jpg"/></a>
-						<?php else:?>
-					<a href="<?php echo $_SERVER['PHP_SELF'] . '?openid_mode=checkid_setup&openid_identifier=google.com/accounts/o8/id' ?>" id="LoginWithGoogleLink"><span class="google"><img src="images/google_icon.jpg" /></a>
-					<?php endif;?>
-					</p>
+							onclick="myIFrame.location='https://www.google.com/accounts/Logout';StartPollingForCompletion();return false;"> <img src="images/google_icon.jpg"/></a>
+							<?php else:?>
+							<a href="<?php echo $_SERVER['PHP_SELF'] . '?openid_mode=checkid_setup&openid_identifier=google.com/accounts/o8/id' ?>" id="LoginWithGoogleLink"><span class="google"><img src="images/google_icon.jpg" /></a>
+							<?php endif;?>
+							<!-- end Google log out button -->
+						</p>
 					</div>
 					<br/>
 					<br/>
@@ -360,6 +450,7 @@ var googleOpener = popupManager.createPopupOpener({
 				<div id="cB">
 					<div class="Ctopright"></div>
 					<div id="cB1">
+						<!-- main body text -->
 						<div class="news">
 							<?php if(@$_REQUEST['openid_mode'] !== 'id_res' && !$fbme) {
 							?>
@@ -368,6 +459,7 @@ var googleOpener = popupManager.createPopupOpener({
 								The Green Commute Challenge is a point-based competition centered on getting people to use alternative forms of transportation as they go about their everyday lives.
 							</p>
 						</div>
+						<!-- not sure why there are multiple divs-->
 						<div class="news">
 							<p>
 								Registering with us requires a <a href="http://www.facebook.com/">Facebook</a> or <a href="https://accounts.google.com/ServiceLogin?hl=en&continue=http://www.google.com/">Google</a> account and just a few clicks. As a user, you'll be able to enter your daily commutes into the system. Just choose a commute type and enter your miles travelled and you'll be awarded a point value. Rack up your points, and compare how you're doing with your friends with our search feature.
@@ -387,8 +479,44 @@ var googleOpener = popupManager.createPopupOpener({
 							<p>
 								Good luck!
 							</p>
+							<!-- rendered if user is logged into Facebook but not present in the system -->
+							<?php }?>
+							<?php if($fbme && !$registered) {
+							?>
+							<form name="register" action="<?=$config['baseurl']?>" method="post">
+								<h3>Welcome, please enter your information below</h3>
+								<p>
+									First Name:
+									<input type="text" class="search" id="first" name="first" value="<?php print $firstname ?>"  />
+								</p>
+								<p>
+									Last Name:
+									<input type="text" class="search" id="last" name="last" value="<?php print $lastname ?>" />
+								</p>
+								<p>
+									Phone(No Dashes):
+									<input type="text" class="search" id="phone" name="phone" />
+								</p>
+								<p>
+									Age:
+									<input type="text" class="search" id="age" name="age" />
+								</p>
+								<p>
+									Weight:
+									<input type="text" class="search" id="weight" name="weight" />
+								</p>
+								<h3 style="padding-top:20px">Contact Information</h3>
+								<p>
+									E-mail:
+									<input type="text" class="search"  id="email" name="email" value="<?php print $email ?>" />
+								</p>
+								<input type="submit" value="Register"/>
+								<br/>
+								<br/>
+							</form>
 							<?php }?>
 
+					<!-- rendered if logged into google -->
 							<?php if(@$_REQUEST['openid_mode'] === 'id_res') {
 							?>
 
@@ -399,12 +527,12 @@ var googleOpener = popupManager.createPopupOpener({
 							<br/>
 							<br/>
 							<?php }?>
-							<?php if ($fbme){
+							<?php if ($fbme && $registered){
 							?>
-							You are currently logged into Facebook <!-- Display user name-->
+							You are logged into Facebook <!-- Display user name-->
 							<?php
 							foreach ($userInfo as $result) {
-								print "as " . ($result['name']) . "</b>";
+								print "as " . ($result['name']) . " - " . ($result['email']) . "</br>";
 							}
 							?>
 
@@ -464,12 +592,12 @@ var googleOpener = popupManager.createPopupOpener({
 					<a href="./">it391project@gmail.com</a> - <a href="./">FAQ</a>
 				</div><!-- foot1 -->
 				<div id="foot2">
-					Copyright 2011, IT391. Designed by <a href="http://www.symisun.com/" title="We digitalize your ambitions">SymiSun<span class="star">*</span></a>
+				Copyright Fall 2011 IT391 Designed by <a href="http://groups.google.com/group/itk391fall2011/about?hl=en" title="it391">Google Group IT391<span class="star">*</span></a>
 					<script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
 				</div><!-- foot1 -->
 			</div><!-- foot -->
 		</div><!-- footer -->
 		<!-- needed to log out of google -->
-			<iframe id="myIFrame" width="0" height="0" ></iframe>
+		<iframe id="myIFrame" width="0" height="0" ></iframe>
 	</body>
 </html>
