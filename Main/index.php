@@ -261,7 +261,7 @@ var googleOpener = popupManager.createPopupOpener({
 
 					}
 					
-			// Add User (uses random number for  id currently, needs to be fixed)
+			// Add User to Database
 					if (isset($_POST['first'])) {
 						$first = $_POST['first'];
 						$last = $_POST['last'];
@@ -270,7 +270,7 @@ var googleOpener = popupManager.createPopupOpener({
 						$weight = $_POST['weight'];
 						$prefemail = $_POST['email'];
 
-						$query = 'INSERT INTO USER VALUES(' . rand() . ',"' . $last . '","' . $first . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ')';
+						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES(' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ')';
 						echo $query;
 						$result = mysql_query($query);
 						$registered = true;
@@ -589,7 +589,7 @@ var googleOpener = popupManager.createPopupOpener({
 		<div id="footer">
 			<div id="foot">
 				<div id="foot1">
-					<a href="./">it391project@gmail.com</a> - <a href="./">FAQ</a>
+					<a href="./">it391project@gmail.com</a> - <a href="./"></a>
 				</div><!-- foot1 -->
 				<div id="foot2">
 				Copyright Fall 2011 IT391 Designed by <a href="http://groups.google.com/group/itk391fall2011/about?hl=en" title="it391">Google Group IT391<span class="star">*</span></a>
@@ -597,9 +597,7 @@ var googleOpener = popupManager.createPopupOpener({
 				</div><!-- foot1 -->
 			</div><!-- foot -->
 		</div><!-- footer -->
-		
 		<!-- needed to log out of google -->
 		<iframe id="myIFrame" width="0" height="0" ></iframe>
-		
 	</body>
 </html>

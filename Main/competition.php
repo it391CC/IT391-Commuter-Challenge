@@ -1,7 +1,4 @@
 <?php
-
-// copyright notice for Google Oauth/OpenID code
-
 /* Copyright (c) 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,14 +24,14 @@ $hostname='it391test.db.8404538.hostedresource.com';
 $username='it391test';
 $password='Binoy01';
 $dbname='it391test';
-$usertable='usercomp';
-$yourfield = 'mileage';
+
+
 
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
 
-//Example Query
 
+//Example Query
 // $query = 'SELECT * FROM ' . $usertable;
 // $result = mysql_query($query);
 // if($result) {
@@ -44,8 +41,8 @@ mysql_select_db($dbname);
     // }
 // }
 
-// //Twitter PHP Class (uncomment to use)
 
+// //Twitter PHP Class
 // //http://code.google.com/p/twitter-php/
 // $consumerKey = 'o3dsmxU8Eh4pNe9ca2nhtQ';
 // $consumerSecret = 'GF02LPeBdb2Ea1LpHdjjPkqqriBvTV0nS5qoXA5Y';
@@ -60,19 +57,17 @@ mysql_select_db($dbname);
 
 require_once 'common.inc.php';
 
-// Load the necessary Zend Gdata classes for Google login.
-
+// Load the necessary Zend Gdata classes.
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_HttpClient');
 
-// Setup OAuth consumer with our "credentials" for Google login
-
+// Setup OAuth consumer with our "credentials"
 $CONSUMER_KEY = 'limbotestserver.com';
 $CONSUMER_SECRET = 'NAXXzJLbe6PQTuRszF2rvXpi';
 $consumer = new OAuthConsumer($CONSUMER_KEY, $CONSUMER_SECRET);
 $sig_method = $SIG_METHODS['HMAC-SHA1'];
 
-// Define scope of what google can access, uncomment to use
+// Define scope of what google can access
 
 // $scopes = array(
 //   'http://docs.google.com/feeds/',*/
@@ -90,11 +85,9 @@ $openid_ext = array('openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.
 
 // uncomment if declaring scope above
 //   'openid.oauth.scope'       => implode(' ', $scopes),*/
-
 	'openid.ui.icon' => 'true');
 
 //Google API Pop Up Window phCode 
-
 if (isset($_REQUEST['popup']) && !isset($_SESSION['redirect_to'])) {
 	$query_params = '';
 	if ($_POST) {
@@ -175,27 +168,20 @@ function getAccessToken($request_token_str) {
 
 	return $access_token;
 }
-?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Green Commute Challenge</title>
 		<link rel="stylesheet" href="style.css" />
-		
-		<!-- import jquery -->
+		<link rel="stylesheet" href="calendar.css" />
+		<script language="javascript" src="calendar.js"></script>
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-		
-		<!-- pop up window library (from Google) -->
 		<script type="text/javascript" src="popuplib.js"></script>
-		
-		<!-- import for Facebook connect -->
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
-		
-		<!-- Script to pop up google login window -->
 		<script type="text/javascript">
 			var upgradeToken = function() {
 window.location = '<?php echo $_SESSION['redirect_to'] ?>
@@ -233,9 +219,6 @@ var googleOpener = popupManager.createPopupOpener({
 				}
 			}
 		</script>
-		<!-- End Google pop up window script -->
-		
-		<!-- Facebook PHP Code-->
 		<?php
 		include_once "fbmain.php";
 		$config['baseurl'] = "http://limbotestserver.com/";
@@ -244,56 +227,31 @@ var googleOpener = popupManager.createPopupOpener({
 		if ($fbme) {
 			//Query to get user name
 			try {
-				$fql = "SELECT name,first_name,last_name,email FROM user WHERE uid=" . $uid;
+				$fql = "SELECT name,email FROM user WHERE uid=" . $uid;
 				$param = array('method' => 'fql.query', 'query' => $fql, 'callback' => '');
 				$userInfo = $facebook -> api($param);
+
 				//Query to get user id (should be ammended to use a single query)
 				foreach ($userInfo as $result) {
 					$email = $result['email'];
-					$firstname = $result['first_name'];
-					$lastname = $result['last_name'];
 				}
 				$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
 				$result = mysql_query($query);
 				if ($result) {
 					while ($row = mysql_fetch_array($result)) {
 						$id = $row['userid'];
-						$registered = true;
 
 					}
-							// Add User to Database (should be able to use this for the edit profile use case)
-							// Example query: UPDATE USER SET firstName=,lastName=,phone=,loginEmail=,age=,weight= WHERE userID =;
-					if (isset($_POST['first'])) {
-						$first = $_POST['first'];
-						$last = $_POST['last'];
-						$phone = $_POST['phone'];
-						$age = $_POST['age'];
-						$weight = $_POST['weight'];
-						$prefemail = $_POST['email'];
 
-						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES(' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ')';
-						echo $query;
-						$result = mysql_query($query);
-						$registered = true;
-					}
-					
 				}
+
 			} catch(Exception $o) {
 				d($o);
 			}
-
 		}
-
-		// Add status using graph api
-		// if (isset($_POST['status'])) {
-		//
-		// $statusUpdate = $facebook -> api('/me/feed', 'post', array('message' => $_POST['status']));
-		// }
-		//
 		?>
 
 		<!-- Begining of Facebook Scripts -->
-		<div id="fb-root"></div>
 		<script>
 			FB.init({
 				appId : '110603805686133',
@@ -332,92 +290,179 @@ var googleOpener = popupManager.createPopupOpener({
 		</script>
 		<!-- End of Facebook Scripts -->
 	</head>
-
-<body>
-<div id="daddy">
-	<div id="header">
-		<div id="logo"><a href="./"><img src="images/logo.gif" alt="Your Company Logo" width="318" height="85" /></a><span id="logo-text"><a href="./"></a></span></div><!-- logo -->
-		<div id="menu">
-			<ul>
-				<li><a href="index.php">Home</a></li>
-				<li><a href="profile.php" id="active">Profile</a></li>
-				<li><a href="./">Challenges</a></li>
-				<li><a href="commutes.php">Commutes</a></li>
-				<li><a href="./">About</a></li>
-				<li><a href="./">Contact</a></li>
-			</ul>
-		</div><!-- menu -->
-		<div id="headerimage">
-			<div id="icons">
-				<a href="./" ><img src="images/icon_home.gif" alt="Home" width="13" height="13" id="home" /></a>
-				<a href="./"><img src="images/icon_sitemap.gif" alt="Sitemap" width="13" height="13" id="sitemap" /></a>
-				<a href="./"><img src="images/icon_contact.gif" alt="Contact" width="13" height="13" id="contact" /></a>			</div><!-- icons -->
-			<div id="slogan"></div>
-		</div>
-		<!-- headerimage -->
-	</div>
-	<!-- header -->
-	<div id="content">
-		<div id="cA">
-			<div class="Ctopleft"></div>
-			<h3>SEARCH</h3>
-			<div id="search">
-				<input type="text" class="search" /><input type="submit" class="submit" value="Find" />
-			</div><!-- search -->
-			<p>&nbsp;</p>
-			<h3>Your Current Points:</h3>
-            <div id="facebooklogin" style="background-image:url(images/bg_points.jpg); background-position:center; background-repeat:no-repeat; height:100px">
-            	<p style="text-align:center; font-size:36px; padding-top:40px; color:#FC0">56</p>
-            </div>
-            <div id="googlelogin">
-            <h3 style="padding-top:10px">Your Challenges:</h3>
-            <ul style="padding-left:5px">
-            	<li><a href="./" title="Challenge A">Challenge A</a></li>
-            </ul>
-            </div>
-		</div><!-- cA -->
-		<div id="cB">
-			<div class="Ctopright"></div>
-			<div id="cB1">
-				<h3>Change Your Profile Settings:</h3>
-				<div class="news">
-					<p>First Name: <input type="text" class="search" /></p>
-                    <p>Last Name: <input type="text" class="search" /></p>
-                    <p>Age: <input type="text" class="search" /></p>
-                    <p>Weight: <input type="text" class="search" /></p>
-                    <h3 style="padding-top:20px">Change Password</h3>
-                    <p>Password: <input type="password" class="search" /></p>
-                    <p>Confirm Password: <input type="password" class="search" /></p>
-                    <h3 style="padding-top:20px">Contact Information</h3>
-                    <p>E-mail: <input type="text" class="search" /></p>
-                    <p>Confirm E-mail: <input type="text" class="search" /></p>
-                    Public? <input type="checkbox" />
-				</div>
-			</div><!-- cB1 -->
-			<div id="cB2">
-				<h3>CHALLENGE NEWS</h3>
-				<div class="about">
+	<body>
+		<div id="fb-root"></div>
+		<div id="daddy">
+			<div id="header">
+				<div id="logo">
+					<a href="./"><img src="images/logo.gif" alt="Your Company Logo" width="318" height="85" /></a><span id="logo-text"><a href="./"></a></span>
+				</div><!-- logo -->
+				<div id="menu">
 					<ul>
-						<li>Challenge website is under constructon</li>
-                        <li>Challenges begin MAY 2012</li>
-                        <li>Look for our Android mobile app</li>
+						<li>
+							<a href="index.php" >Home</a>
+						</li>
+						<li>
+							<a href="profile.php">Profile</a>
+						</li>
+						<li>
+							<a href="competition.php" id="active">Challenges</a>
+						</li>
+						<li>
+							<a href="commutes.php" >Commutes</a>
+						</li>
+						<li>
+							<a href="./">About</a>
+						</li>
+						<li>
+							<a href="./">Contact</a>
+						</li>
 					</ul>
+				</div><!-- menu -->
+				<div id="headerimage">
+					<div id="slogan"></div>
 				</div>
-			</div><!-- cB2 -->
-		</div><!-- cB -->
-		<div class="Cpad">
-			<br class="clear" /><div class="Cbottomleft"></div><div class="Cbottom"></div><div class="Cbottomright"></div>
-		</div><!-- Cpad -->
-	</div><!-- content -->
-	<div id="properspace"></div><!-- properspace -->
-</div><!-- daddy -->
-<div id="footer">
-	<div id="foot">
-		<div id="foot1"><a href="./">it391project@gmail.com</a> - <a href="./"></a></div><!-- foot1 -->
-		<div id="foot2">
-			Copyright 2011, IT391. Designed by <a href="http://www.symisun.com/" title="We digitalize your ambitions">SymiSun<span class="star">*</span></a>
-		</div><!-- foot1 -->
-	</div><!-- foot -->
-</div><!-- footer -->
-</body>
+				<!-- headerimage -->
+			</div>
+			<!-- header -->
+			<div id="cA">
+				<div class="Ctopleft"></div>
+				<!-- <h3>SEARCH &nbsp; &nbsp; &nbsp; <fb:login-button autologoutlink="true" onlogin="Log.info('onlogin callback')" perms="publish_stream, read_stream, email, user_birthday"></fb:login-button></h3> -->
+				<!-- <div id="search">
+					<input type="text" class="search" />
+					<input type="submit" class="submit" value="Find" />
+				</div><!-- search --> 
+				<p>
+					&nbsp;
+				</p>
+				<!-- <h3>Your Current Points(currently miles for testing):</h3>
+				<div id="facebooklogin" style="background-image:url(images/bg_points.jpg); background-position:center; background-repeat:no-repeat; height:100px">
+					<p style="text-align:center; font-size:36px; padding-top:40px; color:#FC0">
+						<?php print "".$totalmiles
+						?>
+					</p>
+				</div>
+				<div id="googlelogin">
+					<h3 style="padding-top:10px">Your Challenges:</h3>
+					<ul style="padding-left:5px">
+						<li>
+							<a href="./" title="Challenge A">Challenge A</a>
+						</li>
+					</ul>
+				</div> -->
+			</div><!-- cA -->
+			<div id="content">
+				<div id="cB">
+					<div class="Ctopright"></div>
+					<div id="cB1">
+						<h3>Create New Challenge</h3>
+						<div style="height: 300px" class="news">
+							<form name="competition" action="<?=$config['baseurl . competition.php']?>" method="post">
+								Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="text" id="name" name="name"/>
+								<br /><br />
+								Start Date:&nbsp;&nbsp;<br/>
+								<?php
+//get class into the page
+require_once('classes/tc_calendar.php');
+
+	  $myCalendar = new tc_calendar("date1", true);
+	  $myCalendar->setIcon("calendar/images/iconCalendar.gif");
+	  $myCalendar->setPath("calendar/");
+	  $myCalendar->setYearInterval(2011, 2015);
+	  $myCalendar->dateAllow('2011-01-01', '2015-03-01');
+	  $myCalendar->writeScript();
+
+?>
+
+								<br/><br />
+								End Date:&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+								<?php
+//get class into the page
+require_once('classes/tc_calendar.php');
+
+	  $myCalendar = new tc_calendar("date2", true);
+	  $myCalendar->setIcon("calendar/images/iconCalendar.gif");
+	  $myCalendar->setPath("calendar/");
+	  $myCalendar->setYearInterval(2011, 2015);
+	  $myCalendar->dateAllow('2011-01-01', '2015-03-01');
+	  $myCalendar->writeScript();
+
+?>
+			<br/><br/>
+								</p>
+								<input type="submit" value="Create"/>
+							</form>
+<?php
+// Post Challenge
+					if (isset($_POST['name'])) {
+							$name= $_POST['name'];
+							$date1 = isset($_REQUEST["date1"]) ? $_REQUEST["date1"] : "";
+							$date2 = isset($_REQUEST["date1"]) ? $_REQUEST["date1"] : "";
+							$end =  isset($_REQUEST["date2"]) ? $_REQUEST["date2"] : "";
+							$query = 'INSERT INTO COMPETITION (startDate,endDate,compName) VALUES ("'.$date1.'","'.$date2.'","'.$name.'");';
+							$result = mysql_query($query);
+							print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
+						}
+					?>
+
+					
+						</div>
+						<!-- Facebook/Google/Twitter Buttons -->
+						<script type="text/javascript">
+							(function() {
+								var po = document.createElement('script');
+								po.type = 'text/javascript';
+								po.async = true;
+								po.src = 'https://apis.google.com/js/plusone.js';
+								var s = document.getElementsByTagName('script')[0];
+								s.parentNode.insertBefore(po, s);
+							})();
+
+						</script>
+						<center>
+							<table>
+								<tr>
+									<td><div class="fb-like" data-send="false" data-href="http://limbotestserver.com" data-layout="button_count" data-width="45" data-show-faces="false"></div></td>
+									<td><div class="g-plusone" data-size="medium" data-href="http://limbotestserver.com"></div> &nbsp; </td>
+									<td><a href="https://twitter.com/share" data-text="I'm going green with the Commuter Challenge!! " class="twitter-share-button">Tweet</a></td>
+								</tr>
+							</table>
+						</center>
+						<!-- End Facebook/Google/Twitter Buttons -->
+					</div><!-- cB1 -->
+					<div id="cB2">
+						<h3>Current Competitions</h3>
+						<div class="about">
+						<!-- add current competitions here -->
+						</div>
+					</div><!-- cB2 -->
+				</div><!-- cB -->
+				<div class="Cpad">
+					<br class="clear" />
+					<div class="Cbottomleft"></div><div class="Cbottom"></div><div class="Cbottomright"></div>
+				</div><!-- Cpad -->
+			</div><!-- content -->
+			<div id="properspace"></div><!-- properspace -->
+			<!-- Place this render call where appropriate -->
+		</div><!-- daddy -->
+		<div id="footer">
+			<div id="foot">
+				<div id="foot1">
+					<a href="./">it391project@gmail.com</a> - <a href="./"></a>
+				</div><!-- foot1 -->
+				<div id="foot2">
+					Copyright 2011, IT391. Designed by <a href="http://www.symisun.com/" title="We digitalize your ambitions">SymiSun<span class="star">*</span></a>
+					<script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
+				</div><!-- foot1 -->
+			</div><!-- foot -->
+		</div><!-- footer -->
+		<!-- needed to log out of google -->
+		<iframe id="myIFrame" width="0" height="0" ></iframe>
+	</body>
+	<!--Sends user back to home page if not logged into Facebook -->
+	<?php if (!$fbme){
+	?>
+	<!-- <meta HTTP-EQUIV="REFRESH" content="0; url=http://limbotestserver.com"> -->
+	<?php }?>
 </html>
