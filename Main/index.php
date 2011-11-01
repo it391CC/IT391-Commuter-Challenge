@@ -46,6 +46,8 @@ mysql_select_db($dbname);
 						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
 						echo $query;
 						$result = mysql_query($query);
+						$_SESSION['user']=$email;
+						$_SESSION['loggedin']=true;
 						$registered = true;
 					}
 
@@ -358,9 +360,7 @@ $email = $_REQUEST['openid_ext1_value_email'];
 						</li>
 						
 						<!-- rendered if logged in and registered -->
-						<?php if ($fbme || @$_REQUEST['openid_mode'] == 'id_res'){
-						?>
-						<?php if ($registered){
+						<?php if ($_SESSION['loggedin']){
 						?>
 						<li>
 							<a href="profile.php">Profile</a>
@@ -371,7 +371,6 @@ $email = $_REQUEST['openid_ext1_value_email'];
 						<li>
 							<a href="commutes.php">Commutes</a>
 						</li>
-						<?php }?>
 						<?php }?>
 						<!-- end conditional render -->
 						
@@ -536,7 +535,10 @@ $email = $_REQUEST['openid_ext1_value_email'];
 					<!-- rendered if logged into google -->
 							<?php if(@$_REQUEST['openid_mode'] === 'id_res' && $registered) {
 							?>
-
+							<?php
+							$_SESSION['user']=$_REQUEST['openid_ext1_value_email'];
+							$_SESSION['loggedin']=true;
+							?>
 							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
 							?>
 
