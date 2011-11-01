@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+    <TabHost 
+    android:id="@android:id/tabhost" 
+    android:layout_width="match_parent" 
+    android:layout_height="match_parent" 
+    android:layout_alignParentTop="true" 
+    android:layout_alignParentLeft="true">
+        <LinearLayout 
+        android:layout_width="match_parent" 
+        android:id="@+id/linearLayout1" 
+        android:layout_height="match_parent" 
+        android:orientation="vertical">
+            <TabWidget 
+            android:layout_width="match_parent" 
+            android:layout_height="wrap_content" 
+            android:id="@android:id/tabs"></TabWidget>
+            <FrameLayout 
+            android:layout_width="match_parent" 
+            android:layout_height="match_parent" 
+            android:id="@android:id/tabcontent">
+                <AbsoluteLayout 
+                android:layout_width="fill_parent" 
+                android:layout_height="fill_parent" 
+                android:id="@+id/tab1">
+                    <AbsoluteLayout  android:id="@+id/AbsoluteLayout1" android:layout_width="match_parent" android:layout_x="-1dp" android:layout_y="0dp" android:layout_height="124dp">
+                        <EditText android:text="Distance" android:layout_height="wrap_content" android:id="@+id/editText1" android:layout_width="wrap_content" android:layout_x="6dp" android:layout_y="33dp"></EditText>
+                        <TextView android:text="Miles" android:id="@+id/textView1" android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceSmall" android:layout_width="wrap_content" android:layout_x="96dp" android:layout_y="50dp"></TextView>
+                        <TextView android:text="Enter Commute:" android:id="@+id/textView3" android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_width="wrap_content" android:layout_x="5dp" android:layout_y="3dp"></TextView>
+                        <Spinner android:id="@+id/spinner1" android:layout_height="wrap_content" android:layout_width="120dp" android:layout_x="197dp" android:layout_y="31dp"></Spinner>
+                        <TextView android:text="Type:" android:id="@+id/textView2" android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceSmall" android:layout_width="wrap_content" android:layout_x="160dp" android:layout_y="51dp"></TextView>
+                        <Button android:id="@+id/button1" android:layout_height="32dp" android:text="Submit" android:layout_width="86dp" android:layout_x="109dp" android:layout_y="86dp"></Button>
+                    </AbsoluteLayout>
+                    <ListView android:id="@+id/listView1" android:layout_y="126dp" android:layout_height="match_parent" android:layout_width="wrap_content" android:layout_x="0dp"></ListView>
+                </AbsoluteLayout>
+                <AbsoluteLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab2" android:text= "This is tab2"></AbsoluteLayout>
+                <AbsoluteLayout android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/tab3"></AbsoluteLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+    
+</RelativeLayout>
