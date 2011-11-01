@@ -27,18 +27,41 @@ $dbname='it391test';
 $usertable='usercommute';
 $yourfield = 'mileage';
 
+$user = $_SESSION['user'] ;
+echo $user;
+
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
 
-//Example Query
-// $query = 'SELECT * FROM ' . $usertable;
-// $result = mysql_query($query);
-// if($result) {
-    // while($row = mysql_fetch_array($result)){
-        // $name = $row[$yourfield];
-        // echo 'Name: ' . $name;
-    // }
-// }
+$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $user . "'";
+				$result = mysql_query($query);
+				if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+						$id = $row['userid'];
+
+					}
+				}
+
+// Post Commute (add support for favorite)
+					if (isset($_POST['dist'])) {
+						if (is_numeric($_POST['dist'])) {
+							$miles = $_POST['dist'];
+							$desc = $_POST['status'];
+							$query = 'INSERT INTO USERCOMMUTE (userID,commuteID,commuteDate,commuteTime,mileage,isFavorite,description)  VALUES(' . $id . ',' . rand().','.'CURRENT_DATE' . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ',0,' . '"' . $desc . '"' . ');';
+							echo $query;
+							$result = mysql_query($query);
+						}
+					}
+//Query to get and calculate total mileage
+					$query = 'SELECT mileage FROM USERCOMMUTE where userID =' . "'" . $id. "'";
+					$result = mysql_query($query);
+					if ($result) {
+						while ($row = mysql_fetch_array($result)) {
+							$totalmiles = $totalmiles + $row[$yourfield];
+						}
+
+					}
+					
 
 
 // //Twitter PHP Class
@@ -240,24 +263,6 @@ var googleOpener = popupManager.createPopupOpener({
 
 					}
 
-					// Post Commute (add support for favorite)
-					if (isset($_POST['dist'])) {
-						if (is_numeric($_POST['dist'])) {
-							$miles = $_POST['dist'];
-							$desc = $_POST['status'];
-							$query = 'INSERT INTO USERCOMMUTE (userID,commuteDate,commuteTimes,mileage,isFavorite,description)  VALUES(' . $id . ',' . 'CURRENT_DATE' . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ',0,' . '"' . $desc . '"' . ')';
-							$result = mysql_query($query);
-						}
-					}
-					//Query to get and calculate total mileage
-					$query = 'SELECT mileage FROM USERCOMMUTE where userID =' . "'" . $id . "'";
-					$result = mysql_query($query);
-					if ($result) {
-						while ($row = mysql_fetch_array($result)) {
-							$totalmiles = $totalmiles + $row[$yourfield];
-						}
-
-					}
 				}
 
 			} catch(Exception $o) {
@@ -321,7 +326,7 @@ var googleOpener = popupManager.createPopupOpener({
 							<a href="profile.php">Profile</a>
 						</li>
 						<li>
-							<a href="./">Challenges</a>
+							<a href="competition.php">Challenges</a>
 						</li>
 						<li>
 							<a href="commutes.php" id="active">Commutes</a>
@@ -342,11 +347,6 @@ var googleOpener = popupManager.createPopupOpener({
 			<!-- header -->
 			<div id="cA">
 				<div class="Ctopleft"></div>
-				<h3>SEARCH &nbsp; &nbsp; &nbsp; <fb:login-button autologoutlink="true" onlogin="Log.info('onlogin callback')" perms="publish_stream, read_stream, email, user_birthday"></fb:login-button></h3>
-				<div id="search">
-					<input type="text" class="search" />
-					<input type="submit" class="submit" value="Find" />
-				</div><!-- search -->
 				<p>
 					&nbsp;
 				</p>
@@ -454,7 +454,7 @@ var googleOpener = popupManager.createPopupOpener({
 		<iframe id="myIFrame" width="0" height="0" ></iframe>
 	</body>
 	<!--Sends user back to home page if not logged into Facebook -->
-	<?php if (!$fbme){
+	<?php if (!$_SESSION['loggedin']){
 	?>
 	<meta HTTP-EQUIV="REFRESH" content="0; url=http://limbotestserver.com">
 	<?php }?>
