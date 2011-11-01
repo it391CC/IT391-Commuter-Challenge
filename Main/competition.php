@@ -25,21 +25,32 @@ $username='it391test';
 $password='Binoy01';
 $dbname='it391test';
 
-
-
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
 
+$user = $_SESSION['user'] ;
+echo $user;
 
-//Example Query
-// $query = 'SELECT * FROM ' . $usertable;
-// $result = mysql_query($query);
-// if($result) {
-    // while($row = mysql_fetch_array($result)){
-        // $name = $row[$yourfield];
-        // echo 'Name: ' . $name;
-    // }
-// }
+$query = 'SELECT userID FROM USER where loginEmail = ' . "'" . $user . "';";
+echo $query;	
+$result = mysql_query($query);
+				if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+						$id = $row['userID'];
+
+					}
+				}
+$query = 'SELECT isAdmin from USER
+where userID=' .$id.';';	
+echo $query;	
+$result = mysql_query($query);
+				if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+						$admin = $row['isAdmin'];
+						echo $admin;
+
+					}
+				}
 
 
 // //Twitter PHP Class
@@ -177,8 +188,8 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Green Commute Challenge</title>
 		<link rel="stylesheet" href="style.css" />
-		<link rel="stylesheet" href="calendar.css" />
-		<script language="javascript" src="calendar.js"></script>
+		<link rel="stylesheet" href="calendar/calendar.css" />
+		<script language="javascript" src="calendar/calendar.js"></script>
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 		<script type="text/javascript" src="popuplib.js"></script>
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
@@ -357,6 +368,9 @@ var googleOpener = popupManager.createPopupOpener({
 					<div id="cB1">
 						<h3>Create New Challenge</h3>
 						<div style="height: 300px" class="news">
+						<?php if($admin==1) {
+							?>
+						
 							<form name="competition" action="<?=$config['baseurl . competition.php']?>" method="post">
 								Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<input type="text" id="name" name="name"/>
@@ -364,7 +378,7 @@ var googleOpener = popupManager.createPopupOpener({
 								Start Date:&nbsp;&nbsp;<br/>
 								<?php
 //get class into the page
-require_once('classes/tc_calendar.php');
+require_once('calendar/classes/tc_calendar.php');
 
 	  $myCalendar = new tc_calendar("date1", true);
 	  $myCalendar->setIcon("calendar/images/iconCalendar.gif");
@@ -379,7 +393,7 @@ require_once('classes/tc_calendar.php');
 								End Date:&nbsp;&nbsp;&nbsp;&nbsp;<br/>
 								<?php
 //get class into the page
-require_once('classes/tc_calendar.php');
+require_once('calendar/classes/tc_calendar.php');
 
 	  $myCalendar = new tc_calendar("date2", true);
 	  $myCalendar->setIcon("calendar/images/iconCalendar.gif");
@@ -405,7 +419,14 @@ require_once('classes/tc_calendar.php');
 							print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
 						}
 					?>
-
+	<?php }?>
+	<?php if($admin==0) {
+							?>
+							
+							<?php print "Please log in as an administrative user to view challenges"?>
+							<?php }?>
+							
+							
 					
 						</div>
 						<!-- Facebook/Google/Twitter Buttons -->
