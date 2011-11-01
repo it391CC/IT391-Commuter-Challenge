@@ -175,6 +175,7 @@ function getAccessToken($request_token_str) {
 
 	return $access_token;
 }
+	
 ?>
 
 <!DOCTYPE html>
@@ -233,7 +234,42 @@ var googleOpener = popupManager.createPopupOpener({
 			}
 		</script>
 		<!-- End Google pop up window script -->
-		
+		<?php
+		//add user from Google
+if(@$_REQUEST['openid_mode'] === 'id_res') {
+
+
+$firstname = $_REQUEST['openid_ext1_value_first'];
+$lastname = $_REQUEST['openid_ext1_value_last'];
+$email = $_REQUEST['openid_ext1_value_email'];
+
+//Query to get user name
+
+				$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
+				$result = mysql_query($query);
+				if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+						$id = $row['userid'];
+						$registered = true;
+					}
+				}
+			// Add User to Database
+					if (isset($_POST['first'])) {
+						$first = $_POST['first'];
+						$last = $_POST['last'];
+						$phone = $_POST['phone'];
+						$age = $_POST['age'];
+						$weight = $_POST['weight'];
+						$prefemail = $_POST['email'];
+
+						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
+						echo $query;
+						$result = mysql_query($query);
+						// add check to see if user was added successfully
+						$registered = true;
+					}
+				}
+		?>
 		<!-- Facebook PHP Code-->
 		<?php
 		include_once "fbmain.php";
@@ -258,7 +294,6 @@ var googleOpener = popupManager.createPopupOpener({
 					while ($row = mysql_fetch_array($result)) {
 						$id = $row['userid'];
 						$registered = true;
-
 					}
 					
 			// Add User to Database
@@ -270,7 +305,7 @@ var googleOpener = popupManager.createPopupOpener({
 						$weight = $_POST['weight'];
 						$prefemail = $_POST['email'];
 
-						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES(' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ')';
+						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
 						echo $query;
 						$result = mysql_query($query);
 						$registered = true;
@@ -353,7 +388,7 @@ var googleOpener = popupManager.createPopupOpener({
 							<a href="profile.php">Profile</a>
 						</li>
 						<li>
-							<a href="./">Challenges</a>
+							<a href="competition.php">Challenges</a>
 						</li>
 						<li>
 							<a href="commutes.php">Commutes</a>
@@ -481,10 +516,12 @@ var googleOpener = popupManager.createPopupOpener({
 							</p>
 							<!-- rendered if user is logged into Facebook but not present in the system -->
 							<?php }?>
-							<?php if($fbme && !$registered) {
+							<?php if($fbme ||  @$_REQUEST['openid_mode'] == 'id_res' ) {
+							?>
+							<?php if (! $registered){
 							?>
 							<form name="register" action="<?=$config['baseurl']?>" method="post">
-								<h3>Welcome, please enter your information below</h3>
+								<h3>Welcome, please enter your information below(currently all fields are required)</h3>
 								<p>
 									First Name:
 									<input type="text" class="search" id="first" name="first" value="<?php print $firstname ?>"  />
@@ -515,9 +552,10 @@ var googleOpener = popupManager.createPopupOpener({
 								<br/>
 							</form>
 							<?php }?>
+							<?php }?>
 
 					<!-- rendered if logged into google -->
-							<?php if(@$_REQUEST['openid_mode'] === 'id_res') {
+							<?php if(@$_REQUEST['openid_mode'] === 'id_res' && $registered) {
 							?>
 
 							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
