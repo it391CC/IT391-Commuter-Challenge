@@ -31,7 +31,7 @@ import com.store.CredentialStore;
 import com.store.SharedPreferencesCredentialStore;
 import com.google.api.client.auth.oauth2.draft10.AccessTokenResponse;
 
-
+//chris smells
 
 
 public class AndroidProjectActivity extends Activity {

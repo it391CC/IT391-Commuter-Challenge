@@ -27,8 +27,8 @@ $hostname='it391test.db.8404538.hostedresource.com';
 $username='it391test';
 $password='Binoy01';
 $dbname='it391test';
-$usertable='usercomp';
-$yourfield = 'mileage';
+$usertable='user';
+$yourfield = 'userID';
 
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
@@ -331,6 +331,7 @@ var googleOpener = popupManager.createPopupOpener({
 
 		</script>
 		<!-- End of Facebook Scripts -->
+		
 	</head>
 
 <body>
@@ -341,17 +342,13 @@ var googleOpener = popupManager.createPopupOpener({
 			<ul>
 				<li><a href="index.php">Home</a></li>
 				<li><a href="profile.php" id="active">Profile</a></li>
-				<li><a href="./">Challenges</a></li>
+				<li><a href="competition.php">Challenges</a></li>
 				<li><a href="commutes.php">Commutes</a></li>
 				<li><a href="./">About</a></li>
 				<li><a href="./">Contact</a></li>
 			</ul>
 		</div><!-- menu -->
 		<div id="headerimage">
-			<div id="icons">
-				<a href="./" ><img src="images/icon_home.gif" alt="Home" width="13" height="13" id="home" /></a>
-				<a href="./"><img src="images/icon_sitemap.gif" alt="Sitemap" width="13" height="13" id="sitemap" /></a>
-				<a href="./"><img src="images/icon_contact.gif" alt="Contact" width="13" height="13" id="contact" /></a>			</div><!-- icons -->
 			<div id="slogan"></div>
 		</div>
 		<!-- headerimage -->
@@ -367,13 +364,27 @@ var googleOpener = popupManager.createPopupOpener({
 			<p>&nbsp;</p>
 			<h3>Your Current Points:</h3>
             <div id="facebooklogin" style="background-image:url(images/bg_points.jpg); background-position:center; background-repeat:no-repeat; height:100px">
-            	<p style="text-align:center; font-size:36px; padding-top:40px; color:#FC0">56</p>
+            	<p style="text-align:center; font-size:36px; padding-top:40px; color:#FC0">
+            		<?php
+            			print 56;
+            		?>
+            	</p>
             </div>
             <div id="googlelogin">
             <h3 style="padding-top:10px">Your Challenges:</h3>
             <ul style="padding-left:5px">
             	<li><a href="./" title="Challenge A">Challenge A</a></li>
             </ul>
+            
+            <h3></h3>
+            	<?php 
+					$query = 'SELECT * FROM USER where userID =' . "'" . $id. "'";
+					$result = mysql_query($query);
+
+            		//$query = 'DELETE FROM USER WHERE userID = ' . $id; 
+            		//$result = mysql_query($query);
+            	?> 
+            
             </div>
 		</div><!-- cA -->
 		<div id="cB">
@@ -381,17 +392,17 @@ var googleOpener = popupManager.createPopupOpener({
 			<div id="cB1">
 				<h3>Change Your Profile Settings:</h3>
 				<div class="news">
-					<p>First Name: <input type="text" class="search" /></p>
-                    <p>Last Name: <input type="text" class="search" /></p>
-                    <p>Age: <input type="text" class="search" /></p>
-                    <p>Weight: <input type="text" class="search" /></p>
+					<p>First Name:       <input type="text" class="search" /></p>
+                    <p>Last Name:        <input type="text" class="search" /></p>
+                    <p>Age:              <input type="text" class="search" /></p>
+                    <p>Weight:           <input type="text" class="search" /></p>
                     <h3 style="padding-top:20px">Change Password</h3>
-                    <p>Password: <input type="password" class="search" /></p>
+                    <p>Password:         <input type="password" class="search" /></p>
                     <p>Confirm Password: <input type="password" class="search" /></p>
                     <h3 style="padding-top:20px">Contact Information</h3>
-                    <p>E-mail: <input type="text" class="search" /></p>
-                    <p>Confirm E-mail: <input type="text" class="search" /></p>
-                    Public? <input type="checkbox" />
+                    <p>E-mail:           <input type="text" class="search" /></p>
+                    <p>Confirm E-mail:   <input type="text" class="search" /></p>
+                    edit profile <input type="submit" />
 				</div>
 			</div><!-- cB1 -->
 			<div id="cB2">
@@ -413,7 +424,7 @@ var googleOpener = popupManager.createPopupOpener({
 </div><!-- daddy -->
 <div id="footer">
 	<div id="foot">
-		<div id="foot1"><a href="./">it391project@gmail.com</a> - <a href="./"></a></div><!-- foot1 -->
+		<div id="foot1"><a href="mailto:it391project@gmail.com">it391project@gmail.com</a> - <a href="./"></a></div><!-- foot1 -->
 		<div id="foot2">
 			Copyright 2011, IT391. Designed by <a href="http://www.symisun.com/" title="We digitalize your ambitions">SymiSun<span class="star">*</span></a>
 		</div><!-- foot1 -->

@@ -33,16 +33,23 @@ $yourfield = 'mileage';
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
 
-//Example Query
+			// Add User to Database
+					if (isset($_POST['first'])) {
+						$first = $_POST['first'];
+						$last = $_POST['last'];
+						$phone = $_POST['phone'];
+						$age = $_POST['age'];
+						$weight = $_POST['weight'];
+						$prefemail = $_POST['prefemail'];
+						$email = $_POST['email'];
 
-// $query = 'SELECT * FROM ' . $usertable;
-// $result = mysql_query($query);
-// if($result) {
-    // while($row = mysql_fetch_array($result)){
-        // $name = $row[$yourfield];
-        // echo 'Name: ' . $name;
-    // }
-// }
+						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
+						echo $query;
+						$result = mysql_query($query);
+						$_SESSION['user']=$email;
+						$_SESSION['loggedin']=true;
+						$registered = true;
+					}
 
 // //Twitter PHP Class (uncomment to use)
 
@@ -253,22 +260,7 @@ $email = $_REQUEST['openid_ext1_value_email'];
 						$registered = true;
 					}
 				}
-			// Add User to Database
-					if (isset($_POST['first'])) {
-						$first = $_POST['first'];
-						$last = $_POST['last'];
-						$phone = $_POST['phone'];
-						$age = $_POST['age'];
-						$weight = $_POST['weight'];
-						$prefemail = $_POST['email'];
-
-						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
-						echo $query;
-						$result = mysql_query($query);
-						// add check to see if user was added successfully
-						$registered = true;
-					}
-				}
+}
 		?>
 		<!-- Facebook PHP Code-->
 		<?php
@@ -295,27 +287,15 @@ $email = $_REQUEST['openid_ext1_value_email'];
 						$id = $row['userid'];
 						$registered = true;
 					}
-					
-			// Add User to Database
-					if (isset($_POST['first'])) {
-						$first = $_POST['first'];
-						$last = $_POST['last'];
-						$phone = $_POST['phone'];
-						$age = $_POST['age'];
-						$weight = $_POST['weight'];
-						$prefemail = $_POST['email'];
-
-						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
-						echo $query;
-						$result = mysql_query($query);
-						$registered = true;
-					}
+			
 				}
 			} catch(Exception $o) {
 				d($o);
 			}
 
 		}
+				
+
 
 		// Add status using graph api
 		// if (isset($_POST['status'])) {
@@ -380,9 +360,7 @@ $email = $_REQUEST['openid_ext1_value_email'];
 						</li>
 						
 						<!-- rendered if logged in and registered -->
-						<?php if ($fbme || @$_REQUEST['openid_mode'] == 'id_res'){
-						?>
-						<?php if ($registered){
+						<?php if ($_SESSION['loggedin']){
 						?>
 						<li>
 							<a href="profile.php">Profile</a>
@@ -393,7 +371,6 @@ $email = $_REQUEST['openid_ext1_value_email'];
 						<li>
 							<a href="commutes.php">Commutes</a>
 						</li>
-						<?php }?>
 						<?php }?>
 						<!-- end conditional render -->
 						
@@ -544,9 +521,10 @@ $email = $_REQUEST['openid_ext1_value_email'];
 								</p>
 								<h3 style="padding-top:20px">Contact Information</h3>
 								<p>
-									E-mail:
-									<input type="text" class="search"  id="email" name="email" value="<?php print $email ?>" />
+									Contact E-mail:
+									<input type="text" class="search"  id="prefemail" name="prefemail" value="<?php print $email ?>" />
 								</p>
+								<input type="hidden" name="email" id = "email" value="<?php print $email ?>">
 								<input type="submit" value="Register"/>
 								<br/>
 								<br/>
@@ -557,7 +535,10 @@ $email = $_REQUEST['openid_ext1_value_email'];
 					<!-- rendered if logged into google -->
 							<?php if(@$_REQUEST['openid_mode'] === 'id_res' && $registered) {
 							?>
-
+							<?php
+							$_SESSION['user']=$_REQUEST['openid_ext1_value_email'];
+							$_SESSION['loggedin']=true;
+							?>
 							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
 							?>
 
