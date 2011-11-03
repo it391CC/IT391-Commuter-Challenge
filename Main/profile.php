@@ -383,6 +383,27 @@ var googleOpener = popupManager.createPopupOpener({
 
             		//$query = 'DELETE FROM USER WHERE userID = ' . $id; 
             		//$result = mysql_query($query);
+					
+					if ($result) {
+						while ($row = mysql_fetch_array($result)) {
+							$firstName = $row['firstName'];
+							$lastName = $row['lastName'];
+							$phone = $row['phone'];
+							$prefferedEmail = $row['prefferedEmail'];
+							$age = $row['age'];
+							$weight = $row['weight'];
+							
+							echo '<p>First Name:	<input type="text" class="search" value="' . $firstName . '"> /></p>';
+							
+							//print results to page
+							//echo '<div id="favorite">'."\r";	
+							//echo '<div id="desc'.$num.'" >'.$desc.'<div>'."\r";
+							//echo '<div id="miles'.$num.'" >'.$miles.'<div>'."\r";
+							//echo '</div>'."\r";	
+							//echo "\r";
+						}
+					}
+					
             	?> 
             
             </div>
