@@ -380,6 +380,7 @@ var googleOpener = popupManager.createPopupOpener({
             	<?php 
 					$query = 'SELECT * FROM USER where userID =' . "'" . $id. "'";
 					$result = mysql_query($query);
+					echo $query;
 
             		//$query = 'DELETE FROM USER WHERE userID = ' . $id; 
             		//$result = mysql_query($query);
