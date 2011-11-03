@@ -17,8 +17,6 @@ mysql_select_db($dbname);
 <body>
 	<?php
 	
-	//counter to increment
-	$num =1;
 	
 	//get all commute types from commute table
 	$query = 'Select commtype FROM COMMUTE ;';
@@ -27,11 +25,11 @@ mysql_select_db($dbname);
 					while ($row = mysql_fetch_array($result)) {
 						$type = $row['commtype'];
 						
-						//print to screen						
+						//print to screen		
+						echo '<div id="commute">'."\r";				
 						echo '<div id="comm'.$num.'" >'.$type.'<div><br/>'."\r";
+						echo '</div>'."\r";		
 						echo "\r";
-						//increment counter
-						$num ++;
 
 					}
 				}
@@ -42,11 +40,11 @@ mysql_select_db($dbname);
 					while ($row = mysql_fetch_array($result)) {
 						$type = $row['ocommtype'];
 												
-						//print to screen						
+						//print to screen		
+						echo '<div id="commute">'."\r";				
 						echo '<div id="comm'.$num.'" >'.$type.'<div><br/>'."\r";
+						echo '</div>'."\r";		
 						echo "\r";
-						//increment counter
-						$num ++;
 
 					}
 				}

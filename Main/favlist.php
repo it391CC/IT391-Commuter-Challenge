@@ -32,9 +32,7 @@ if (isset($_GET['email'])) {
 </head>	
 <body>
 	<?php
-	//counter to increment
-	$num =1;
-	
+
 	// select all user commutes for a given user id
 	$query = 'Select * FROM USERCOMMUTE WHERE isFavorite=1 AND userID ='.$id;
 	$result = mysql_query($query);
@@ -42,27 +40,14 @@ if (isset($_GET['email'])) {
 					while ($row = mysql_fetch_array($result)) {
 						$desc = $row['description'];
 						$miles = $row['mileage'];
-						$commid = $row['commuteID'];
 						
-						//should have probably used a merge instead of another query here, if this was a big system this would be bad
-						//query to get commute type based on id						
-						$query2 = 'SELECT commtype from COMMUTE where commuteID ='.$commid;
-						$result2 = mysql_query($query2);
-						if ($result2) {
-							while ($row = mysql_fetch_array($result2)) {
-								$type = $row['commtype'];
-							}
-
-					}
 						
 						//print results to page
-						echo '<div id="type'.$num.'" >'.$type.'<div><br/>'."\r";
-						echo '<div id="desc'.$num.'" >'.$desc.'<div><br/>'."\r";
-						echo '<div id="miles'.$num.'" >'.$miles.'<div><br/>'."\r";
+						echo '<div id="favorite">'."\r";	
+						echo '<div id="desc'.$num.'" >'.$desc.'<div>'."\r";
+						echo '<div id="miles'.$num.'" >'.$miles.'<div>'."\r";
+						echo '</div>'."\r";	
 						echo "\r";
-						//increment counter
-						$num ++;
-
 					}
 				}
 	?>
