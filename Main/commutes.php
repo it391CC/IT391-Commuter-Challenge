@@ -47,7 +47,7 @@ $query = 'SELECT userid FROM USER where loginemail = ' . "'" . $user . "'";
 						if (is_numeric($_POST['dist'])) {
 							$miles = $_POST['dist'];
 							$desc = $_POST['status'];
-							$query = 'INSERT INTO USERCOMMUTE (userID,commuteID,commuteDate,commuteTime,mileage,isFavorite,description)  VALUES(' . $id . ',' . rand().','.'CURRENT_DATE' . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ',0,' . '"' . $desc . '"' . ');';
+							$query = 'INSERT INTO USERCOMMUTE (userID,commuteDate,mileage,isFavorite,description)  VALUES(' . $id . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ','.$fav.',' . '"' . $desc . '"' . ')';
 							echo $query;
 							$result = mysql_query($query);
 						}
