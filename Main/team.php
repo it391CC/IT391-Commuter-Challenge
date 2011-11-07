@@ -378,7 +378,7 @@ var googleOpener = popupManager.createPopupOpener({
             
             <h3></h3>
             	<?php 
-					$query = 'SELECT * FROM USER where userID =' . "'" . $id. "'";
+					/*$query = 'SELECT * FROM USER where userID =' . "'" . $id. "'";
 					$result = mysql_query($query);
 					echo $query;
 
@@ -403,7 +403,7 @@ var googleOpener = popupManager.createPopupOpener({
 							//echo '</div>'."\r";	
 							//echo "\r";
 						}
-					}
+					}*/
 					
             	?> 
             
@@ -414,27 +414,103 @@ var googleOpener = popupManager.createPopupOpener({
 			<div id="cB1">
 				<h3>Change Your Profile Settings:</h3>
 				<div class="news">
-					<p>First Name:       <input type="text" class="search" /></p>
-                    <p>Last Name:        <input type="text" class="search" /></p>
-                    <p>Age:              <input type="text" class="search" /></p>
-                    <p>Weight:           <input type="text" class="search" /></p>
-                    <h3 style="padding-top:20px">Change Password</h3>
-                    <p>Password:         <input type="password" class="search" /></p>
-                    <p>Confirm Password: <input type="password" class="search" /></p>
-                    <h3 style="padding-top:20px">Contact Information</h3>
-                    <p>E-mail:           <input type="text" class="search" /></p>
-                    <p>Confirm E-mail:   <input type="text" class="search" /></p>
-                    edit profile <input type="submit" />
+					
+                    <!-- MY TEAM INFORMATION -->
+                    <?php
+						if($id != "")
+						{
+							//echo 'My userID is '.$id.'<br>';
+							
+							$teamID = 0;
+							$query = "SELECT teamID from USERTEAM WHERE userID=".$id;
+							$result = mysql_query($query);
+							
+							while($row = mysql_fetch_array($result))
+							{
+								$teamID = $row["teamID"];
+							}
+							if($teamID != 0)
+							{
+								// User is on a team.
+								//echo $teamID."<br>";
+								$query = "SELECT name FROM TEAM WHERE teamID=".$teamID;
+								$result = mysql_query($query);
+								$teamName = '';
+								while($row = mysql_fetch_array($result)) {
+									$teamName = $row["name"];	
+								}
+								
+								echo "Your team:<br><center><h1>".$teamName."</h1></center><br>";
+								echo "Total Points: <i>[TODO: Place Team Points]</i><br><br>";
+								
+								echo "Other users on your team: <br>";
+								$query = "SELECT * FROM USERTEAM WHERE teamID=".$teamID;
+								$result = mysql_query($query);
+								echo "<ol>";
+								while($row = mysql_fetch_array($result)) {
+									$userID = $row["userID"];
+									$query2 = "SELECT * FROM USER WHERE userID=".$userID;
+									$result2 = mysql_query($query2);
+									while($row = mysql_fetch_array($result2)) {	
+										$fName = $row["firstName"];
+										$lName = $row["lastName"];
+										$isAdmin = $row["isAdmin"];
+										if($isAdmin)
+											echo "<b>";
+										echo "<li>".$fName." ".$lName."</li>";
+										if($isAdmin)
+											echo "</b>";
+									}
+								}
+								echo "</ol>";
+								echo "<br><br>";
+								echo "<input type='button' value='Leave Team'><br>";
+							}
+							else
+							{
+								// User is not on a team.
+								echo "You aren't on any teams!<br><br>
+								<h3>Join a team:</h3><br>";								
+								echo "<form name='addToTeam' action='addtoteam.php' method='post'>";
+								echo "<input type='hidden' name='usersID' value=".$id.">";
+								echo "<select name='teamName'>";
+								$query = "SELECT * FROM TEAM";
+								$result = mysql_query($query);
+								while($row = mysql_fetch_array($result))
+								{
+									$name = $row["name"];
+									echo "<option value='".$name."'>".$name."</option>";
+								}
+								echo "</select>";
+								echo "<br><input type='submit' value='Join'><br>";
+								echo "</form>";
+							}
+						}
+						else
+						{
+							// User is not logged in.
+							echo 'You need to be logged in to view teams!<br>';
+						}
+					?>
+                    
 				</div>
 			</div><!-- cB1 -->
 			<div id="cB2">
 				<h3>CHALLENGE NEWS</h3>
 				<div class="about">
-					<ul>
-						<li>Challenge website is under constructon</li>
-                        <li>Challenges begin MAY 2012</li>
-                        <li>Look for our Android mobile app</li>
-					</ul>
+					
+                    <center><h3>Teams</h3></center><br>
+                    <?php
+						$query = "SELECT * FROM TEAM";
+						$result = mysql_query($query);
+						echo "<ol>";
+						while($row = mysql_fetch_array($result)) {
+							$teamName = $row["name"];
+							echo "<li>".$teamName."</li>";
+						}
+						echo "</ol>";
+					?>
+                                        
 				</div>
 			</div><!-- cB2 -->
 		</div><!-- cB -->
