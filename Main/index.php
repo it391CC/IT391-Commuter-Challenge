@@ -19,7 +19,7 @@
  * Author: Eric Bidelman <e.bidelman>
  */
 
-//Google Session
+//Google/PHP Session
 session_start();
 
 //Connect To Database
@@ -27,13 +27,11 @@ $hostname='it391test.db.8404538.hostedresource.com';
 $username='it391test';
 $password='Binoy01';
 $dbname='it391test';
-$usertable='usercomp';
-$yourfield = 'mileage';
 
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
 
-			// Add User to Database
+// Add User to Database from Form
 					if (isset($_POST['first'])) {
 						$first = $_POST['first'];
 						$last = $_POST['last'];
@@ -46,62 +44,31 @@ mysql_select_db($dbname);
 						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
 						echo $query;
 						$result = mysql_query($query);
+						//set session variables
 						$_SESSION['user']=$email;
 						$_SESSION['loggedin']=true;
 						$registered = true;
 					}
 
-// //Twitter PHP Class (uncomment to use)
-
-// //http://code.google.com/p/twitter-php/
-// $consumerKey = 'o3dsmxU8Eh4pNe9ca2nhtQ';
-// $consumerSecret = 'GF02LPeBdb2Ea1LpHdjjPkqqriBvTV0nS5qoXA5Y';
-// $accessToken = '14080973-aDGvZNOXjtYFam3hbAgxmcKpOINankQemDJJ7GRmb';
-// $accessTokenSecret = 'nIPeLBTfZfEU3tgCfxQLwQSin7yT9mDsQzlMNUjkCJ4';
-// require_once 'Twitter-PHP/twitter.class.php';
-// $twitter = new Twitter($consumerKey, $consumerSecret,
-// $accessToken, $accessTokenSecret);
-// $channel = $twitter->load(Twitter::REPLIES);
-
-// OAuth/OpenID libraries and utility functions.
-
+// Load common Library
 require_once 'common.inc.php';
 
 // Load the necessary Zend Gdata classes for Google login.
-
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_HttpClient');
 
 // Setup OAuth consumer with our "credentials" for Google login
-
 $CONSUMER_KEY = 'limbotestserver.com';
 $CONSUMER_SECRET = 'NAXXzJLbe6PQTuRszF2rvXpi';
 $consumer = new OAuthConsumer($CONSUMER_KEY, $CONSUMER_SECRET);
 $sig_method = $SIG_METHODS['HMAC-SHA1'];
-
-// Define scope of what google can access, uncomment to use
-
-// $scopes = array(
-//   'http://docs.google.com/feeds/',*/
-//   'http://spreadsheets.google.com/feeds/',*/
-//   'http://www-opensocial.googleusercontent.com/api/people/'*/
-// );
-
 $openid_params = array('openid.ns' => 'http://specs.openid.net/auth/2.0', 'openid.claimed_id' => 'http://specs.openid.net/auth/2.0/identifier_select', 'openid.identity' => 'http://specs.openid.net/auth/2.0/identifier_select', 'openid.return_to' => "http://{$CONSUMER_KEY}{$_SERVER['PHP_SELF']}", 'openid.realm' => "http://{$CONSUMER_KEY}", 'openid.mode' => @$_REQUEST['openid_mode'], 'openid.ns.ui' => 'http://specs.openid.net/extensions/ui/1.0', 'openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.ext1.mode' => 'fetch_request', 'openid.ext1.type.email' => 'http://axschema.org/contact/email', 'openid.ext1.type.first' => 'http://axschema.org/namePerson/first', 'openid.ext1.type.last' => 'http://axschema.org/namePerson/last', 'openid.ext1.type.country' => 'http://axschema.org/contact/country/home', 'openid.ext1.type.lang' => 'http://axschema.org/pref/language', 'openid.ext1.required' => 'email,first,last,country,lang', 'openid.ns.oauth' => 'http://specs.openid.net/extensions/oauth/1.0', 'openid.oauth.consumer' => $CONSUMER_KEY,
-
-// uncomment if declaring scope above
-//   'openid.oauth.scope'       => implode(' ', $scopes)*/
 );
 
 $openid_ext = array('openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.ext1.mode' => 'fetch_request', 'openid.ext1.type.email' => 'http://axschema.org/contact/email', 'openid.ext1.type.first' => 'http://axschema.org/namePerson/first', 'openid.ext1.type.last' => 'http://axschema.org/namePerson/last', 'openid.ext1.type.country' => 'http://axschema.org/contact/country/home', 'openid.ext1.type.lang' => 'http://axschema.org/pref/language', 'openid.ext1.required' => 'email,first,last,country,lang', 'openid.ns.oauth' => 'http://specs.openid.net/extensions/oauth/1.0', 'openid.oauth.consumer' => $CONSUMER_KEY,
-
-// uncomment if declaring scope above
-//   'openid.oauth.scope'       => implode(' ', $scopes),*/
-
 	'openid.ui.icon' => 'true');
 
 //Google API Pop Up Window phCode 
-
 if (isset($_REQUEST['popup']) && !isset($_SESSION['redirect_to'])) {
 	$query_params = '';
 	if ($_POST) {
@@ -122,7 +89,9 @@ if (isset($_REQUEST['popup']) && !isset($_SESSION['redirect_to'])) {
 	unset($_SESSION['redirect_to']);
 	header('Location: ' . $redirect);
 }
+//End Google API Pop Up Window Code
 
+//Google API OpenID
 $request_token = @$_REQUEST['openid_ext2_request_token'];
 if ($request_token) {
 	$data = array();
@@ -158,7 +127,9 @@ switch(@$_REQUEST['openid_mode']) {
 	// TODO
 		break;
 }
+//End Google API OpenID
 
+//Google API Oauth
 /**
  * Upgrades an OAuth request token to an access token.
  *
@@ -182,15 +153,19 @@ function getAccessToken($request_token_str) {
 
 	return $access_token;
 }
-	
+//End Google API Oauth	
 ?>
 
+<!--Web Page Start-->
 <!DOCTYPE html>
+<!-- import for fbml (Facebook Markup Language)-->
 <html xmlns="http://www.w3.org/1999/xhtml"
 xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Green Commute Challenge</title>
+		
+		<!-- import stylesheet-->
 		<link rel="stylesheet" href="style.css" />
 		
 		<!-- import jquery -->
@@ -205,29 +180,28 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 		<!-- Script to pop up google login window -->
 		<script type="text/javascript">
 			var upgradeToken = function() {
-window.location = '<?php echo $_SESSION['redirect_to'] ?>
-	';
-	};
-	var extensions = 
-<?php echo json_encode($openid_ext);?>;
-var googleOpener = popupManager.createPopupOpener({
-'realm' : '<?php echo $openid_params['openid.realm'] ?>
-	',
-	'opEndpoint' : 'https://www.google.com/accounts/o8/ud',
-	'returnToUrl' : '
-<?php echo $openid_params['openid.return_to'] . '?popup=true' ?>
-	',
-	'onCloseHandler' : upgradeToken,
-	'shouldEncodeUrls' : true,
-	'extensions' : extensions
-	});
-	$(document).ready(function() {
+		window.location = '<?php echo $_SESSION['redirect_to'] ?>
+		';
+		};
+		var extensions = 
+		<?php echo json_encode($openid_ext);?>;
+		var googleOpener = popupManager.createPopupOpener({
+		'realm' : '<?php echo $openid_params['openid.realm'] ?>
+		',
+		'opEndpoint' : 'https://www.google.com/accounts/o8/ud',
+		'returnToUrl' : '
+		<?php echo $openid_params['openid.return_to'] . '?popup=true' ?>
+		',
+		'onCloseHandler' : upgradeToken,
+		'shouldEncodeUrls' : true,
+		'extensions' : extensions
+		});
+		$(document).ready(function() {
 		jQuery('#LoginWithGoogleLink').click(function() {
 			googleOpener.popup(450, 500);
 			return false;
+			});
 		});
-	});
-
 		</script>
 		<script type="text/javascript">
 			function toggle(id, type) {
@@ -241,71 +215,92 @@ var googleOpener = popupManager.createPopupOpener({
 			}
 		</script>
 		<!-- End Google pop up window script -->
+		
 		<?php
-		//add user from Google
-if(@$_REQUEST['openid_mode'] === 'id_res') {
+//Check user from Google
 
+		//If user is logged into Google
+		if(@$_REQUEST['openid_mode'] === 'id_res') {
 
-$firstname = $_REQUEST['openid_ext1_value_first'];
-$lastname = $_REQUEST['openid_ext1_value_last'];
-$email = $_REQUEST['openid_ext1_value_email'];
+		//Get first,last name and email from Google and assign to variables
+	$firstname = $_REQUEST['openid_ext1_value_first'];
+	$lastname = $_REQUEST['openid_ext1_value_last'];
+	$email = $_REQUEST['openid_ext1_value_email'];
 
-//Query to get user name
+	//Query to get user name from Database
 
-				$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
-				$result = mysql_query($query);
-				if ($result) {
-					while ($row = mysql_fetch_array($result)) {
-						$id = $row['userid'];
-						$registered = true;
-					}
-				}
-}
-		?>
-		<!-- Facebook PHP Code-->
+	//Get User ID from DB using email
+	$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
+	//Run query and store as an array
+	$result = mysql_query($query);
+	//iterate through array and set id variable to the user's id in the database
+	if ($result) {
+	while ($row = mysql_fetch_array($result)) {
+	$id = $row['userid'];
+	// mark user as having already registered, since they are present in the database	
+	$registered = true;
+	//mark user as logged in and registered for session
+	$_SESSION['user']=$email;
+	$_SESSION['loggedin']=true;
+			}
+		}
+	}
+//End Check User from Google
+	?>
+
 		<?php
+//Check user from Facebook
+
+		//import facebook api library
 		include_once "fbmain.php";
+		
+		// configure the facebook api to use the site address
 		$config['baseurl'] = "http://limbotestserver.com/";
 
 		//if user is logged into Facebook and session is valid.
 		if ($fbme) {
+			
 			//Query to get user name
 			try {
+				//FQL (Facebook Query Language) statement to get first,last name and email from Facebook
 				$fql = "SELECT name,first_name,last_name,email FROM user WHERE uid=" . $uid;
 				$param = array('method' => 'fql.query', 'query' => $fql, 'callback' => '');
+				
+				//store returned query as an array
 				$userInfo = $facebook -> api($param);
-				//Query to get user id (should be ammended to use a single query)
+				
+				//set first,last name and email variables from the userInfo array
 				foreach ($userInfo as $result) {
 					$email = $result['email'];
 					$firstname = $result['first_name'];
 					$lastname = $result['last_name'];
 				}
+				
+				////Get User ID from DB using email (same as Google, should make this a function at some point)
 				$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
 				$result = mysql_query($query);
+				//iterate through array and set id variable to the user's id in the database
 				if ($result) {
 					while ($row = mysql_fetch_array($result)) {
 						$id = $row['userid'];
+						// mark user as having already registered, since they are present in the database	
 						$registered = true;
+						//mark user as logged in and registered for session
+						$_SESSION['user']=$email;
+						$_SESSION['loggedin']=true;
 					}
 			
 				}
+			// Catch any errors from Facebook or Site	
 			} catch(Exception $o) {
 				d($o);
 			}
 
 		}
-				
-
-
-		// Add status using graph api
-		// if (isset($_POST['status'])) {
-		//
-		// $statusUpdate = $facebook -> api('/me/feed', 'post', array('message' => $_POST['status']));
-		// }
-		//
+//End Check User from Facebook
 		?>
 
-		<!-- Begining of Facebook Scripts -->
+<!-- Begining of Facebook Scripts -->
 		<div id="fb-root"></div>
 		<script>
 			FB.init({
@@ -343,10 +338,10 @@ $email = $_REQUEST['openid_ext1_value_email'];
 			};
 
 		</script>
-		<!-- End of Facebook Scripts -->
+<!-- End of Facebook Scripts -->
 	</head>
 	
-	<!-- document body -->
+<!-- Document Body -->
 	<body>
 		<div id="daddy">
 			<div id="header">
@@ -391,13 +386,6 @@ $email = $_REQUEST['openid_ext1_value_email'];
 			<div id="content">
 				<div id="cA">
 					<div class="Ctopleft"></div>
-					
-					<!-- uneeded search -->
-					<!--<h3>SEARCH</h3>
-					<div id="search">
-						<input type="text" class="search" />
-						<input type="submit" class="submit" value="Find" />
-					</div> search -->
 	
 					<div id="facebooklogin">
 						<p class="testimonial">
@@ -537,6 +525,7 @@ $email = $_REQUEST['openid_ext1_value_email'];
 							?>
 							<?php
 							$_SESSION['user']=$_REQUEST['openid_ext1_value_email'];
+							//Set user as logged in for Session
 							$_SESSION['loggedin']=true;
 							?>
 							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
@@ -603,7 +592,6 @@ $email = $_REQUEST['openid_ext1_value_email'];
 				</div><!-- Cpad -->
 			</div><!-- content -->
 			<div id="properspace"></div><!-- properspace -->
-			<!-- Place this render call where appropriate -->
 		</div><!-- daddy -->
 		<div id="footer">
 			<div id="foot">
