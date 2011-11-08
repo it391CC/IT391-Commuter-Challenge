@@ -26,9 +26,9 @@ mysql_select_db($dbname);
 						$type = $row['commtype'];
 						
 						//print to screen		
-						echo '<div id="commute">'."\r";				
-						echo '<div id="comm'.$num.'" >'.$type.'<div><br/>'."\r";
-						echo '</div>'."\r";		
+						//echo '<div id="commute">'."\r";				
+						echo '<div id="comm" >'.$type.'</div>'."\r";
+						//echo '</div>'."\r";		
 						echo "\r";
 
 					}
@@ -41,9 +41,9 @@ mysql_select_db($dbname);
 						$type = $row['ocommtype'];
 												
 						//print to screen		
-						echo '<div id="commute">'."\r";				
-						echo '<div id="comm'.$num.'" >'.$type.'<div><br/>'."\r";
-						echo '</div>'."\r";		
+					//	echo '<div id="commute">'."\r";				
+						echo '<div id="comm" >'.$type.'</div>'."\r";
+					//	echo '</div>'."\r";		
 						echo "\r";
 
 					}

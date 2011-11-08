@@ -22,10 +22,13 @@ $result = mysql_query($query);
 					while ($row = mysql_fetch_array($result)) {
 						
 						$id = $row['userID'];
-						echo $id;
+						//echo $id;
 
 					}
 				}
+				
+$query = 'Select isSpokesperson from USERTEAM where userID= ' .$id;
+$sesSpoke = mysql_query($query);
 				
 ?>
 <!DOCTYPE html>
@@ -59,11 +62,12 @@ $result = mysql_query($query);
 							<a href="commutes.php" >Commutes</a>
 						</li>
 						<li>
-							<a href="admin.php" id="active">Administration</a>
+							<a href="team.php"id="active">Teams</a>
 						</li>
-						<li>
-							<a href="./">Contact</a>
-						</li>
+						<!-- <li>
+							<a href="admin.php" >Administration</a>
+						</li> -->
+						
 					</ul>
 				</div><!-- menu -->
 				<div id="headerimage">
@@ -161,9 +165,25 @@ $result = mysql_query($query);
 										$fName = $row["firstName"];
 										$lName = $row["lastName"];
 										//$isAdmin = $row["isAdmin"];
+										
+										if($sesSpoke) {
+											if($isSpokes){
+												$button = '<input type="button" value="Already Spokesperson" disabled="disabled" />';
+											}else{
+												$cmsg = "Are you sure you want to promote ".$flName." to spokesperson?";
+												$form = '<form action="promotespokesperson.php" method="post" onsubmit="return confirm('.$cmsg.')" >';
+												$input1 = '<input type="hidden" name="user" value="'.$userID.'" />';
+												$input2 = '<input type="hidden" name="team" value="'.$teamID.'" />';
+												$sub = '<input type="submit" value="Promote to Spokesperson" />';
+												$closeform = '</form>';	
+												$button = $form.$input1.$input2.$sub.$closeform;
+											}
+										}else{
+											$button = "";
+										}
 										if($isSpokes)
 											echo "<b>";
-										echo "<li>".$fName." ".$lName."</li>";
+										echo "<li>".$fName." ".$lName." ".$button."</li>";
 										if($isSpokes)
 											echo "</b>";
 									}

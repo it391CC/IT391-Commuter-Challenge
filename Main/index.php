@@ -230,17 +230,19 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 	//Query to get user name from Database
 
 	//Get User ID from DB using email
-	$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
+	$query = 'SELECT userid,isAdmin FROM USER where loginemail = ' . "'" . $email . "'";
 	//Run query and store as an array
 	$result = mysql_query($query);
 	//iterate through array and set id variable to the user's id in the database
 	if ($result) {
 	while ($row = mysql_fetch_array($result)) {
 	$id = $row['userid'];
+	$admin = $row['isAdmin'];	
 	// mark user as having already registered, since they are present in the database	
 	$registered = true;
 	//mark user as logged in and registered for session
 	$_SESSION['user']=$email;
+	$_SESSION['admin']=$admin;
 	$_SESSION['loggedin']=true;
 			}
 		}
@@ -277,16 +279,18 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 				}
 				
 				////Get User ID from DB using email (same as Google, should make this a function at some point)
-				$query = 'SELECT userid FROM USER where loginemail = ' . "'" . $email . "'";
+				$query = 'SELECT userid,isAdmin FROM USER where loginemail = ' . "'" . $email . "'";
 				$result = mysql_query($query);
 				//iterate through array and set id variable to the user's id in the database
 				if ($result) {
 					while ($row = mysql_fetch_array($result)) {
 						$id = $row['userid'];
+						$admin = $row['isAdmin'];
 						// mark user as having already registered, since they are present in the database	
 						$registered = true;
 						//mark user as logged in and registered for session
 						$_SESSION['user']=$email;
+						$_SESSION['admin']=$admin;
 						$_SESSION['loggedin']=true;
 					}
 			
@@ -366,15 +370,27 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 						<li>
 							<a href="commutes.php">Commutes</a>
 						</li>
+						<li>
+							<a href="team.php">Teams</a>
+						</li>
 						<?php }?>
 						<!-- end conditional render -->
-						
+						<?php if ($_SESSION['admin']){
+						?>
+						<li>
+							<a href="admin.php">Administration</a>
+						</li>
+						<?php }?>
+						<?php if (!$_SESSION['loggedin']){
+						?>
 						<li>
 							<a href="./">About</a>
 						</li>
 						<li>
 							<a href="./">Contact</a>
 						</li>
+						<?php }?>
+						
 					</ul>
 				</div><!-- menu -->
 				<div id="headerimage">
@@ -600,7 +616,6 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 				</div><!-- foot1 -->
 				<div id="foot2">
 				Copyright Fall 2011 IT391 Designed by <a href="http://groups.google.com/group/itk391fall2011/about?hl=en" title="it391">Google Group IT391<span class="star">*</span></a>
-					<script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
 				</div><!-- foot1 -->
 			</div><!-- foot -->
 		</div><!-- footer -->

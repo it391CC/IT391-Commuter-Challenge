@@ -40,12 +40,14 @@ if (isset($_GET['email'])) {
 					while ($row = mysql_fetch_array($result)) {
 						$desc = $row['description'];
 						$miles = $row['mileage'];
-						
-						
+						$cid = $row['commuteID'];
+
+
 						//print results to page
 						echo '<div id="favorite">'."\r";	
-						echo '<div id="desc'.$num.'" >'.$desc.'<div>'."\r";
-						echo '<div id="miles'.$num.'" >'.$miles.'<div>'."\r";
+						echo '<div id="type" >'.$type.'</div>'."\r";
+						echo '<div id="desc" >'.$desc.'</div>'."\r";
+						echo '<div id="miles" >'.$miles.'</div>'."\r";
 						echo '</div>'."\r";	
 						echo "\r";
 					}

@@ -28,7 +28,7 @@ $usertable='usercommute';
 $yourfield = 'mileage';
 
 $user = $_SESSION['user'] ;
-echo $user;
+//echo $user;
 
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
@@ -47,10 +47,20 @@ $query = 'SELECT userid FROM USER where loginemail = ' . "'" . $user . "'";
 						if (is_numeric($_POST['dist'])) {
 							$miles = $_POST['dist'];
 							$desc = $_POST['status'];
+							if (isset($POST['fav'])) {
+ 							$fav = 1;
+							} 
+							else {
+							$fav = 0;
+							}
+							
 							$query = 'INSERT INTO USERCOMMUTE (userID,commuteDate,mileage,isFavorite,description)  VALUES(' . $id . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ','.$fav.',' . '"' . $desc . '"' . ')';
 							echo $query;
 							$result = mysql_query($query);
 						}
+else{
+	$message = "Please enter a number for miles travelled";
+}
 					}
 //Query to get and calculate total mileage
 					$query = 'SELECT mileage FROM USERCOMMUTE where userID =' . "'" . $id. "'";
@@ -332,10 +342,7 @@ var googleOpener = popupManager.createPopupOpener({
 							<a href="commutes.php" id="active">Commutes</a>
 						</li>
 						<li>
-							<a href="./">About</a>
-						</li>
-						<li>
-							<a href="./">Contact</a>
+							<a href="team.php">Teams</a>
 						</li>
 					</ul>
 				</div><!-- menu -->
@@ -358,12 +365,12 @@ var googleOpener = popupManager.createPopupOpener({
 					</p>
 				</div>
 				<div id="googlelogin">
-					<h3 style="padding-top:10px">Your Challenges:</h3>
+				<!-- 	<h3 style="padding-top:10px">Your Challenges:</h3>
 					<ul style="padding-left:5px">
 						<li>
 							<a href="./" title="Challenge A">Challenge A</a>
 						</li>
-					</ul>
+					</ul> -->
 				</div>
 			</div><!-- cA -->
 			<div id="content">
@@ -386,10 +393,11 @@ var googleOpener = popupManager.createPopupOpener({
 								Description/Notes 								<textarea  rows="5" cols="25" id="status" name="status"> </textarea>
 <br />								<p style="text-align:left">
 									Save as a favorite?
-									<input type="checkbox" value="favCommute"/>
+									<input type="checkbox" id="fav" name="fav"/>
 								</p>
 								<input type="submit" value="Log Commute"/>
 							</form>
+							<?php print $message; ?>
 						</div>
 						<!-- Facebook/Google/Twitter Buttons -->
 						<script type="text/javascript">
