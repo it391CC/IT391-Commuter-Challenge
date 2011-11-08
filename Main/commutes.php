@@ -27,6 +27,7 @@ $dbname='it391test';
 $usertable='usercommute';
 $yourfield = 'mileage';
 
+<<<<<<< HEAD
 $user = $_SESSION['user'] ;
 //echo $user;
 
@@ -72,6 +73,20 @@ else{
 
 					}
 					
+=======
+mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
+mysql_select_db($dbname);
+
+//Example Query
+// $query = 'SELECT * FROM ' . $usertable;
+// $result = mysql_query($query);
+// if($result) {
+    // while($row = mysql_fetch_array($result)){
+        // $name = $row[$yourfield];
+        // echo 'Name: ' . $name;
+    // }
+// }
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 
 
 // //Twitter PHP Class
@@ -273,6 +288,27 @@ var googleOpener = popupManager.createPopupOpener({
 
 					}
 
+<<<<<<< HEAD
+=======
+					// Post Commute (uses random number for commute id currently)
+					if (isset($_POST['dist'])) {
+						if (is_numeric($_POST['dist'])) {
+							$miles = $_POST['dist'];
+							$desc = $_POST['status'];
+							$query = 'INSERT INTO USERCOMMUTE VALUES(' . $id . ',' . rand() . ',' . 'CURRENT_DATE' . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ',0,' . '"' . $desc . '"' . ')';
+							$result = mysql_query($query);
+						}
+					}
+					//Query to get and calculate total mileage
+					$query = 'SELECT mileage FROM USERCOMMUTE where userID =' . "'" . $id . "'";
+					$result = mysql_query($query);
+					if ($result) {
+						while ($row = mysql_fetch_array($result)) {
+							$totalmiles = $totalmiles + $row[$yourfield];
+						}
+
+					}
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 				}
 
 			} catch(Exception $o) {
@@ -336,13 +372,55 @@ var googleOpener = popupManager.createPopupOpener({
 							<a href="profile.php">Profile</a>
 						</li>
 						<li>
+<<<<<<< HEAD
 							<a href="competition.php">Challenges</a>
+=======
+							<a href="./">Challenges</a>
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 						</li>
 						<li>
 							<a href="commutes.php" id="active">Commutes</a>
 						</li>
 						<li>
+<<<<<<< HEAD
 							<a href="team.php">Teams</a>
+=======
+							<a href="./">About</a>
+						</li>
+						<li>
+							<a href="./">Contact</a>
+						</li>
+					</ul>
+				</div><!-- menu -->
+				<div id="headerimage">
+					<div id="slogan"></div>
+				</div>
+				<!-- headerimage -->
+			</div>
+			<!-- header -->
+			<div id="cA">
+				<div class="Ctopleft"></div>
+				<h3>SEARCH &nbsp; &nbsp; &nbsp; <fb:login-button autologoutlink="true" onlogin="Log.info('onlogin callback')" perms="publish_stream, read_stream, email, user_birthday"></fb:login-button></h3>
+				<div id="search">
+					<input type="text" class="search" />
+					<input type="submit" class="submit" value="Find" />
+				</div><!-- search -->
+				<p>
+					&nbsp;
+				</p>
+				<h3>Your Current Points(currently miles for testing):</h3>
+				<div id="facebooklogin" style="background-image:url(images/bg_points.jpg); background-position:center; background-repeat:no-repeat; height:100px">
+					<p style="text-align:center; font-size:36px; padding-top:40px; color:#FC0">
+						<?php print "".$totalmiles
+						?>
+					</p>
+				</div>
+				<div id="googlelogin">
+					<h3 style="padding-top:10px">Your Challenges:</h3>
+					<ul style="padding-left:5px">
+						<li>
+							<a href="./" title="Challenge A">Challenge A</a>
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 						</li>
 					</ul>
 				</div><!-- menu -->
@@ -364,6 +442,7 @@ var googleOpener = popupManager.createPopupOpener({
 						?>
 					</p>
 				</div>
+<<<<<<< HEAD
 				<div id="googlelogin">
 				<!-- 	<h3 style="padding-top:10px">Your Challenges:</h3>
 					<ul style="padding-left:5px">
@@ -372,6 +451,8 @@ var googleOpener = popupManager.createPopupOpener({
 						</li>
 					</ul> -->
 				</div>
+=======
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 			</div><!-- cA -->
 			<div id="content">
 				<div id="cB">
@@ -393,11 +474,18 @@ var googleOpener = popupManager.createPopupOpener({
 								Description/Notes 								<textarea  rows="5" cols="25" id="status" name="status"> </textarea>
 <br />								<p style="text-align:left">
 									Save as a favorite?
+<<<<<<< HEAD
 									<input type="checkbox" id="fav" name="fav"/>
 								</p>
 								<input type="submit" value="Log Commute"/>
 							</form>
 							<?php print $message; ?>
+=======
+									<input type="checkbox" value="favCommute"/>
+								</p>
+								<input type="submit" value="Log Commute"/>
+							</form>
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 						</div>
 						<!-- Facebook/Google/Twitter Buttons -->
 						<script type="text/javascript">
@@ -462,7 +550,11 @@ var googleOpener = popupManager.createPopupOpener({
 		<iframe id="myIFrame" width="0" height="0" ></iframe>
 	</body>
 	<!--Sends user back to home page if not logged into Facebook -->
+<<<<<<< HEAD
 	<?php if (!$_SESSION['loggedin']){
+=======
+	<?php if (!$fbme){
+>>>>>>> 16af858a101333bef25afcf147870fac894245b6
 	?>
 	<meta HTTP-EQUIV="REFRESH" content="0; url=http://limbotestserver.com">
 	<?php }?>
