@@ -23,6 +23,11 @@ $admin = $_SESSION['admin'];
 		<link rel="stylesheet" href="calendar/calendar.css" />
 		<script language="javascript" src="calendar/calendar.js"></script>
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script type="text/javascript">
+			function confirmDelete(msg){
+				return confirm('Are you sure you want to delete the team' + msg); 
+			}
+		</script>
 	</head>
 	<body>
 		<div id="daddy">
@@ -149,12 +154,16 @@ require_once('calendar/classes/tc_calendar.php');
 					<hr/>
 					 <center><h3>Teams</h3></center><br>
 					 <?php
-						$query = "SELECT name FROM TEAM";
+						$query = "SELECT teamID,name FROM TEAM";
 						$result = mysql_query($query);
 						echo "<ol>";
 						while($row = mysql_fetch_array($result)) {
+							$teamID = $row["teamID"];	
 							$teamName = $row["name"];
-							echo "<li>".$teamName."</li>";
+							
+							echo '<li>'.$teamName.'  <form name="delete" action="deleteteam.php" method="post" onsubmit="return confirmDelete('.$teamName.');">
+							<input type="hidden" name="team" value="'. $teamID .'" /><input type="submit" value="Delete Team" />
+							</form></li>';
 						}
 						echo "</ol>";
 					?>
