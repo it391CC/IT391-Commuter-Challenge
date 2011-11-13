@@ -40,6 +40,18 @@ $sesSpoke = mysql_query($query);
 		<link rel="stylesheet" href="calendar/calendar.css" />
 		<script language="javascript" src="calendar/calendar.js"></script>
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<!-- pop up window library (from Google) -->
+		<script type="text/javascript" src="popuplib.js"></script>
+		
+		<script type="text/javascript">
+			function subconfirm(cmsg){
+				var answer = confirm(cmsg);
+				if (answer)
+					return true;
+				else false;	
+			}
+			
+		</script>
 	</head>
 	<body>
 		<div id="daddy">
@@ -89,7 +101,7 @@ $sesSpoke = mysql_query($query);
 								while($row = mysql_fetch_array($result))
 								{
 									$name = $row["name"];
-									echo "<option value='".$name."'>".$name."</option>";
+									echo "<option value='".htmlspecialchars($name)."'>".$name."</option>";
 								}
 								echo "</select>";
 								echo "<br><input type='submit' value='Join'></center><br>";
@@ -169,9 +181,10 @@ $sesSpoke = mysql_query($query);
 										if($sesSpoke) {
 											if($isSpokes){
 												$button = '<input type="button" value="Already Spokesperson" disabled="disabled" />';
-											}else{
+											}elseif(!$isSpokes){
+												$flName = $fName.$lName;
 												$cmsg = "Are you sure you want to promote ".$flName." to spokesperson?";
-												$form = '<form action="promotespokesperson.php" method="post" onsubmit="return confirm('.$cmsg.')" >';
+												$form = '<form action="promotespokesperson.php" method="post" onSubmit="return subconfirm('.$cmsg.')" >';
 												$input1 = '<input type="hidden" name="user" value="'.$userID.'" />';
 												$input2 = '<input type="hidden" name="team" value="'.$teamID.'" />';
 												$sub = '<input type="submit" value="Promote to Spokesperson" />';
