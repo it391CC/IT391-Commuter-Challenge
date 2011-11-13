@@ -48,7 +48,6 @@ $result = mysql_query($query);
 					while ($row = mysql_fetch_array($result)) {
 						$admin = $row['isAdmin'];
 						echo $admin;
-
 					}
 				}
 
@@ -413,12 +412,12 @@ require_once('calendar/classes/tc_calendar.php');
 							$name= $_POST['name'];
 							$date1 = isset($_REQUEST["date1"]) ? $_REQUEST["date1"] : "";
 							$date2 = isset($_REQUEST["date1"]) ? $_REQUEST["date1"] : "";
-							$end =  isset($_REQUEST["date2"]) ? $_REQUEST["date2"] : "";
 							$query = 'INSERT INTO COMPETITION (startDate,endDate,compName) VALUES ("'.$date1.'","'.$date2.'","'.$name.'");';
 							$result = mysql_query($query);
 							print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
 						}
 					?>
+					<!-- close admin check -->
 	<?php }?>
 	<?php if($admin==0) {
 							?>

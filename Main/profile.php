@@ -98,7 +98,7 @@ if (isset($_POST['fname'])) {
 	<div id="content">
 		<div id="cA">
 			<div class="Ctopleft"></div>
-			<<p>
+			<p>
 					&nbsp;
 				</p>
 				<h3>Your Current Points(currently miles for testing):</h3>
@@ -124,16 +124,16 @@ if (isset($_POST['fname'])) {
 				<h3>Change Your Profile Settings:</h3>
 				<form name="editprofile" action="<?=$config['baseurl . /team/shlee4071/profile.php']?>" method="post">
 				<div class="news">
-					<p>First Name :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="fname"class="search" value = <?php print $first?> /></p>
-                    <p>Last Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="lname"class="search" value = <?php print $last?> /></p>
-                    <p>Age :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="age" class="search" value = <?php print $age?> /></p>
-                    <p>Weight :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name ="weight" class="search" value = <?php print $weight?> /></p>
+					<p>First Name :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="fname"class="search" value = <?php print $first?> ></p>
+                    <p>Last Name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="lname"class="search" value = <?php print $last?> ></p>
+                    <p>Age :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="age" class="search" value = <?php print $age?> ></p>
+                    <p>Weight :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name ="weight" class="search" value = <?php print $weight?> ></p>
                     <h3 style="padding-top:20px">Contact Information</h3>
-                    <p>E-mail:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="email"class="search" value =<?php print $prefemail?> /></p>
-					 <p>Phone:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="phone"class="search" value =<?php print $phone?> /></p>
-                    <input type="submit" value="Edit profile"/>
+                    <p>E-mail:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="email"class="search" value =<?php print $prefemail?> ></p>
+					 <p>Phone:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="phone"class="search" value =<?php print $phone?> ></p>
+                   <input type="submit" style="width:100px; height:50px;" value="Save Profile"/>
      </form><br/><br/><br/>
-                    <a href="delete.php">Delete User</a>
+                    <a href="delete.php" onClick="return confirm('Are you sure you want to delete your account?');")>Delete Account</a>
 				</div>
 			</div><!-- cB1 -->
 			<div id="cB2">
