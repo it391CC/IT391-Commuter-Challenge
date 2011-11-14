@@ -13,15 +13,36 @@
 	
 	$teamID = 0;
 	$teamname = $_POST["teamName"];
+	echo $teamname;
+	exit();
 	$userID = $_POST["usersID"];
+	$compID = 0;	
 	
 	$query = "SELECT * FROM TEAM WHERE name='".$teamname."'";
 	$result = mysql_query($query);
 	
 	while($row = mysql_fetch_array($result)) {
 		$teamID = $row["teamID"];
+		$compID = $row["compID"];
+		
+		// Check if user is already on a team in this competition
+		$tquery = "SELECT * FROM USERTEAM WHERE userID=".$userID;
+		$tresult = mysql_query($tquery);
+		while($trow = mysql_fetch_array($tresult)) {
+			$tteamID = $trow["teamID"];
+			$tquery = "SELECT * FROM TEAM WHERE teamID=".$tteamID;
+			$tresult = mysql_query($tquery);
+			while($ttrow = mysql_fetch_array($tresult)) {
+				$tcompID = $ttrow["compID"];
+				if($tcompID == $compID) {
+					echo "<script>location.href='alreadyonteam.php'</script>";
+					exit();
+				}
+			}
+		}
+		
 	}
-	//echo $userID."<br>";
+	echo $userID."<br>";
 	
 	if($teamID != 0 && $userID != NULL) {
 		$query = "INSERT INTO USERTEAM VALUES (".$userID.",".$teamID.",0)";

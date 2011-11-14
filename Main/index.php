@@ -37,17 +37,30 @@ mysql_select_db($dbname);
 						$last = $_POST['last'];
 						$phone = $_POST['phone'];
 						$age = $_POST['age'];
+						if(!$age)
+						$age = "NULL"; 
 						$weight = $_POST['weight'];
+						if(!$weght)
+						$weight = "NULL"; 
 						$prefemail = $_POST['prefemail'];
 						$email = $_POST['email'];
 
-						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . '",' . $age . ',' . $weight . ',0' . ');';
+						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . ' ",' . $age . ',' . $weight . ',0' . ');';
 						echo $query;
 						$result = mysql_query($query);
 						//set session variables
 						$_SESSION['user']=$email;
-						$_SESSION['loggedin']=true;
-						$registered = true;
+						if(!$phone){
+						$glogin=true;	
+						$firstname = $_POST['first'];
+						$lastname = $last = $_POST['last'];	
+						$error = '<br/><b style ="color: red;">Please enter a phone number where you can be reached</b>';
+						$_SESSION['loggedin']=false;	
+						}
+						else{
+							$_SESSION['loggedin']=true;
+							$registered = true;
+						}
 					}
 
 // Load common Library
@@ -437,7 +450,8 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 							<script type='text/javascript'>
 								$('#logout').click(function(event) {
 									FB.logout(function(response) {
-									});
+										window.location = "http://limbotestserver.com/logout.php"
+									});	
 								});
 							</script>
 							<!-- end conditional render -->
@@ -450,7 +464,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 							<?php if(@$_REQUEST['openid_mode'] === 'id_res'):
 							?>
 							<!-- Google log out button -->
-							<a href="http://limbotestserver.com"
+							<a href="logout.php"
 							onclick="myIFrame.location='https://www.google.com/accounts/Logout';StartPollingForCompletion();return false;"> <img src="images/google_icon.jpg"/></a>
 							<?php else:?>
 							<a href="<?php echo $_SERVER['PHP_SELF'] . '?openid_mode=checkid_setup&openid_identifier=google.com/accounts/o8/id' ?>" id="LoginWithGoogleLink"><span class="google"><img src="images/google_icon.jpg" /></a>
@@ -468,7 +482,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 					<div id="cB1">
 						<!-- main body text -->
 						<div class="news">
-							<?php if(@$_REQUEST['openid_mode'] !== 'id_res' && !$fbme) {
+							<?php if(@$_REQUEST['openid_mode'] !== 'id_res' && !$fbme && !$glogin) {
 							?>
 							<h3>Welcome to the GREEN COMMUTE CHALLENGE!</h3>
 							<p>
@@ -497,7 +511,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 							</p>
 							<!-- rendered if user is logged into Facebook but not present in the system -->
 							<?php }?>
-							<?php if($fbme ||  @$_REQUEST['openid_mode'] == 'id_res' ) {
+							<?php if($fbme ||  @$_REQUEST['openid_mode'] == 'id_res' || $glogin ) {
 							?>
 							<?php if (! $registered){
 							?>
@@ -514,6 +528,9 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 								<p>
 									Phone(No Dashes):
 									<input type="text" class="search" id="phone" name="phone" />
+									<?php
+									print $error;
+									?>
 								</p>
 								<p>
 									Age:
@@ -534,32 +551,6 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 								<br/>
 							</form>
 							<?php }?>
-							<?php }?>
-
-					<!-- rendered if logged into google -->
-							<?php if(@$_REQUEST['openid_mode'] === 'id_res' && $registered) {
-							?>
-							<?php
-							$_SESSION['user']=$_REQUEST['openid_ext1_value_email'];
-							//Set user as logged in for Session
-							$_SESSION['loggedin']=true;
-							?>
-							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
-							?>
-
-							<br/>
-							<br/>
-							<br/>
-							<?php }?>
-							<?php if ($fbme && $registered){
-							?>
-							You are logged into Facebook <!-- Display user name-->
-							<?php
-							foreach ($userInfo as $result) {
-								print "as " . ($result['name']) . " - " . ($result['email']) . "</br>";
-							}
-							?>
-
 							<?php }?>
 						</div>
 						<!-- Facebook/Google/Twitter Buttons -->
