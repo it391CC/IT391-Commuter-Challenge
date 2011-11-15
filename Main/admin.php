@@ -62,8 +62,43 @@ $admin = $_SESSION['admin'];
 				<div class="Ctopleft"></div>
 
 				<p>
-					&nbsp;
+						<h3>Add Custom Commute Type</h3>
+					<form name="customcommute" action="<?=$config['baseurl . competition.php']?>" method="post">
+						&nbsp;Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="text" id="ccname" name="ccname"/>
+								<br /><br />
+								&nbsp;Point Value:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="ccvalue" name="ccvalue"/><br/><br />
+						
+						&nbsp;Competition:&nbsp;&nbsp;
+						<?php
+						echo "<select name='compID'>";
+								$query = "SELECT * FROM COMPETITION";
+								$result = mysql_query($query);
+								while($row = mysql_fetch_array($result))
+								{
+									$name = $row["compName"];
+									$compID = $row["compID"];
+									echo "<option value='".$compID."'>".$name."</option>";
+								}
+								echo "</select>";
+								?>
+								<br/><br />
+								&nbsp;<input type="submit" value="Create"/>
+					</form>	
 				</p>
+				<?php
+// Post Challenge
+					if (isset($_POST['ccvalue'])) {
+							$ccname= $_POST['ccname'];
+						    $ccvalue = $_POST['ccvalue'];
+							$cid = $_POST['compID'];
+
+							$query = 'INSERT INTO OTHERCOMMUTE (ocommtype,value,compID) VALUES ("'.$ccname.'",'.$ccvalue.','.$cid.');';
+							//echo $query;
+							$result = mysql_query($query);
+							//print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
+						}
+					?>
 				
 			</div><!-- cA -->
 			<div id="content">
@@ -125,10 +160,10 @@ require_once('calendar/classes/tc_calendar.php');
 	<?php }?>
 	<?php if($admin==0) {
 							?>
-							
-							<?php print "Please log in as an administrative user to view challenges"?>
+							<?php print "Please log in as an administrative user"?>
 							<?php }?>				
 						</div>
+					
 					</div><!-- cB1 -->
 					<div id="cB2">
 					&nbsp;<br/>
