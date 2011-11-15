@@ -879,6 +879,7 @@ var googleOpener = popupManager.createPopupOpener({
 							$mileage = $row["mileage"];
 							$isFav = $row["isFavorite"];
 							$desc = $row["description"];
+							$ucid = $row["userCommuteID"];
 							if($isFav == 1) {
 								echo "<li>".$desc;
 								echo "<form action='logcommute.php' method='post'>";
@@ -892,7 +893,11 @@ var googleOpener = popupManager.createPopupOpener({
 								echo "<input type='hidden' name='isfavorite' value='off'>";
 								//echo "<input type='hidden' name='description' value='".$desc."'>";									
 								echo "<br><input type='submit' value='Log This Commute'/>";
-								echo "</form>";								
+								echo "</form>";			
+								echo "<form action='logcommute.php' method='post'>"	;		
+								echo "<input type='hidden' name='deletefav' value='".$ucid."'>";
+								echo "<input type='submit' value='Remove from Favorites'/>";
+								echo "</form>";					
 								echo "</li>";
 								// TODO: Add a fill out commute button
 							}
