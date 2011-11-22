@@ -26,6 +26,11 @@
 	$result = mysql_query($query);
 	
 	echo "<script>location.href='commutes.php'</script>";
+	
+		if($_POST["deletefav"]){
+			$query = 'UPDATE USERCOMMUTE SET isFavorite=0 WHERE userCommuteID = ' . $_POST["deletefav"]; 
+			$result = mysql_query($query);
+		}
 	exit();
 	
 ?> 
