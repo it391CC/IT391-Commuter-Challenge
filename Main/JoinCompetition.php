@@ -1,7 +1,4 @@
 <?php
-
-// copyright notice for Google Oauth/OpenID code
-
 /* Copyright (c) 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +16,7 @@
  * Author: Eric Bidelman <e.bidelman>
  */
 
-//Google/PHP Session
+//Google Session
 session_start();
 
 //Connect To Database
@@ -28,57 +25,66 @@ $username='it391test';
 $password='Binoy01';
 $dbname='it391test';
 
+
+
 mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
 mysql_select_db($dbname);
 
-// Add User to Database from Form
-					if (isset($_POST['first'])) {
-						$first = $_POST['first'];
-						$last = $_POST['last'];
-						$phone = $_POST['phone'];
-						$age = $_POST['age'];
-						if(!$age)
-						$age = "NULL"; 
-						$weight = $_POST['weight'];
-						if(!$weight)
-						$weight = "NULL"; 
-						$prefemail = $_POST['prefemail'];
-						$email = $_POST['email'];
 
-						$query = 'INSERT INTO USER (firstName,lastName,phone,loginEmail,prefferedEmail,age,weight,isAdmin) VALUES("' . $first . '","' . $last . '",' . $phone . ',"' . $email . '","' . $prefemail . ' ",' . $age . ',' . $weight . ',0' . ');';
-						echo $query;
-						$result = mysql_query($query);
-						//set session variables
-						$_SESSION['user']=$email;
-						if(!$phone){
-						$glogin=true;	
-						$firstname = $_POST['first'];
-						$lastname = $last = $_POST['last'];	
-						$error = '<br/><b style ="color: red;">Please enter a phone number where you can be reached</b>';
-						$_SESSION['loggedin']=false;	
-						}
-						else{
-							$_SESSION['loggedin']=true;
-							$registered = true;
-						}
-					}
+//Example Query
+// $query = 'SELECT * FROM ' . $usertable;
+// $result = mysql_query($query);
+// if($result) {
+    // while($row = mysql_fetch_array($result)){
+        // $name = $row[$yourfield];
+        // echo 'Name: ' . $name;
+    // }
+// }
 
-// Load common Library
+
+// //Twitter PHP Class
+// //http://code.google.com/p/twitter-php/
+// $consumerKey = 'o3dsmxU8Eh4pNe9ca2nhtQ';
+// $consumerSecret = 'GF02LPeBdb2Ea1LpHdjjPkqqriBvTV0nS5qoXA5Y';
+// $accessToken = '14080973-aDGvZNOXjtYFam3hbAgxmcKpOINankQemDJJ7GRmb';
+// $accessTokenSecret = 'nIPeLBTfZfEU3tgCfxQLwQSin7yT9mDsQzlMNUjkCJ4';
+// require_once 'Twitter-PHP/twitter.class.php';
+// $twitter = new Twitter($consumerKey, $consumerSecret,
+// $accessToken, $accessTokenSecret);
+// $channel = $twitter->load(Twitter::REPLIES);
+
+// OAuth/OpenID libraries and utility functions.
+
 require_once 'common.inc.php';
 
-// Load the necessary Zend Gdata classes for Google login.
+// Load the necessary Zend Gdata classes.
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_HttpClient');
 
-// Setup OAuth consumer with our "credentials" for Google login
+// Setup OAuth consumer with our "credentials"
 $CONSUMER_KEY = 'limbotestserver.com';
 $CONSUMER_SECRET = 'NAXXzJLbe6PQTuRszF2rvXpi';
 $consumer = new OAuthConsumer($CONSUMER_KEY, $CONSUMER_SECRET);
 $sig_method = $SIG_METHODS['HMAC-SHA1'];
+
+// Define scope of what google can access
+
+// $scopes = array(
+//   'http://docs.google.com/feeds/',*/
+//   'http://spreadsheets.google.com/feeds/',*/
+//   'http://www-opensocial.googleusercontent.com/api/people/'*/
+// );
+
 $openid_params = array('openid.ns' => 'http://specs.openid.net/auth/2.0', 'openid.claimed_id' => 'http://specs.openid.net/auth/2.0/identifier_select', 'openid.identity' => 'http://specs.openid.net/auth/2.0/identifier_select', 'openid.return_to' => "http://{$CONSUMER_KEY}{$_SERVER['PHP_SELF']}", 'openid.realm' => "http://{$CONSUMER_KEY}", 'openid.mode' => @$_REQUEST['openid_mode'], 'openid.ns.ui' => 'http://specs.openid.net/extensions/ui/1.0', 'openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.ext1.mode' => 'fetch_request', 'openid.ext1.type.email' => 'http://axschema.org/contact/email', 'openid.ext1.type.first' => 'http://axschema.org/namePerson/first', 'openid.ext1.type.last' => 'http://axschema.org/namePerson/last', 'openid.ext1.type.country' => 'http://axschema.org/contact/country/home', 'openid.ext1.type.lang' => 'http://axschema.org/pref/language', 'openid.ext1.required' => 'email,first,last,country,lang', 'openid.ns.oauth' => 'http://specs.openid.net/extensions/oauth/1.0', 'openid.oauth.consumer' => $CONSUMER_KEY,
+
+// uncomment if declaring scope above
+//   'openid.oauth.scope'       => implode(' ', $scopes)*/
 );
 
 $openid_ext = array('openid.ns.ext1' => 'http://openid.net/srv/ax/1.0', 'openid.ext1.mode' => 'fetch_request', 'openid.ext1.type.email' => 'http://axschema.org/contact/email', 'openid.ext1.type.first' => 'http://axschema.org/namePerson/first', 'openid.ext1.type.last' => 'http://axschema.org/namePerson/last', 'openid.ext1.type.country' => 'http://axschema.org/contact/country/home', 'openid.ext1.type.lang' => 'http://axschema.org/pref/language', 'openid.ext1.required' => 'email,first,last,country,lang', 'openid.ns.oauth' => 'http://specs.openid.net/extensions/oauth/1.0', 'openid.oauth.consumer' => $CONSUMER_KEY,
+
+// uncomment if declaring scope above
+//   'openid.oauth.scope'       => implode(' ', $scopes),*/
 	'openid.ui.icon' => 'true');
 
 //Google API Pop Up Window phCode 
@@ -102,9 +108,7 @@ if (isset($_REQUEST['popup']) && !isset($_SESSION['redirect_to'])) {
 	unset($_SESSION['redirect_to']);
 	header('Location: ' . $redirect);
 }
-//End Google API Pop Up Window Code
 
-//Google API OpenID
 $request_token = @$_REQUEST['openid_ext2_request_token'];
 if ($request_token) {
 	$data = array();
@@ -140,9 +144,7 @@ switch(@$_REQUEST['openid_mode']) {
 	// TODO
 		break;
 }
-//End Google API OpenID
 
-//Google API Oauth
 /**
  * Upgrades an OAuth request token to an access token.
  *
@@ -166,70 +168,46 @@ function getAccessToken($request_token_str) {
 
 	return $access_token;
 }
-//End Google API Oauth	
-?>
 
-<!--Web Page Start-->
+?>
 <!DOCTYPE html>
-<!-- import for fbml (Facebook Markup Language)-->
 <html xmlns="http://www.w3.org/1999/xhtml"
 xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Green Commute Challenge</title>
-		
-		<!-- import stylesheet-->
 		<link rel="stylesheet" href="style.css" />
-		
-		<!-- import jquery -->
+		<link rel="stylesheet" href="calendar/calendar.css" />
+		<script language="javascript" src="calendar/calendar.js"></script>
 		<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-		
-		<!-- pop up window library (from Google) -->
+
 		<script type="text/javascript" src="popuplib.js"></script>
-		
-		<!-- import for Facebook connect -->
 		<script src="http://connect.facebook.net/en_US/all.js"></script>
-		
-		<!-- Script to pop up google login window -->
 		<script type="text/javascript">
 			var upgradeToken = function() {
-		window.location = '<?php echo $_SESSION['redirect_to'] ?>
-		';
-		};
-		var extensions = 
-		<?php echo json_encode($openid_ext);?>;
-		var googleOpener = popupManager.createPopupOpener({
-		'realm' : '<?php echo $openid_params['openid.realm'] ?>
-		',
-		'opEndpoint' : 'https://www.google.com/accounts/o8/ud',
-		'returnToUrl' : '
-		<?php echo $openid_params['openid.return_to'] . '?popup=true' ?>
-		',
-		'onCloseHandler' : upgradeToken,
-		'shouldEncodeUrls' : true,
-		'extensions' : extensions
-		});
-		$(document).ready(function() {
+window.location = '	';
+	};
+	var extensions = 
+{"openid.ns.ext1":"http:\/\/openid.net\/srv\/ax\/1.0","openid.ext1.mode":"fetch_request","openid.ext1.type.email":"http:\/\/axschema.org\/contact\/email","openid.ext1.type.first":"http:\/\/axschema.org\/namePerson\/first","openid.ext1.type.last":"http:\/\/axschema.org\/namePerson\/last","openid.ext1.type.country":"http:\/\/axschema.org\/contact\/country\/home","openid.ext1.type.lang":"http:\/\/axschema.org\/pref\/language","openid.ext1.required":"email,first,last,country,lang","openid.ns.oauth":"http:\/\/specs.openid.net\/extensions\/oauth\/1.0","openid.oauth.consumer":"limbotestserver.com","openid.ui.icon":"true"};
+var googleOpener = popupManager.createPopupOpener({
+'realm' : 'http://limbotestserver.com	',
+	'opEndpoint' : 'https://www.google.com/accounts/o8/ud',
+	'returnToUrl' : '
+http://limbotestserver.com/team/aastoeci/competition.php?popup=true	',
+	'onCloseHandler' : upgradeToken,
+	'shouldEncodeUrls' : true,
+	'extensions' : extensions
+	});
+	$(document).ready(function() {
 		jQuery('#LoginWithGoogleLink').click(function() {
 			googleOpener.popup(450, 500);
 			return false;
-			});
 		});
+	});
+
 		</script>
-		<script type="text/javascript">
-			function toggle(id, type) {
-				if(type === 'list') {
-					$('pre.' + id).hide();
-					$('div.' + id).show();
-				} else {
-					$('div.' + id).hide();
-					$('pre.' + id).show();
-				}
-			}
-		</script>
-		<!-- End Google pop up window script -->
 		
-		<?php
+		<script><?php
 //Check user from Google
 
 		//If user is logged into Google
@@ -315,10 +293,20 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 
 		}
 //End Check User from Facebook
-		?>
-
-<!-- Begining of Facebook Scripts -->
-		<div id="fb-root"></div>
+		?></script>
+		<script type="text/javascript">
+			function toggle(id, type) {
+				if(type === 'list') {
+					$('pre.' + id).hide();
+					$('div.' + id).show();
+				} else {
+					$('div.' + id).hide();
+					$('pre.' + id).show();
+				}
+			}
+		</script>
+		
+		<!-- Begining of Facebook Scripts -->
 		<script>
 			FB.init({
 				appId : '110603805686133',
@@ -328,6 +316,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 			});
 
 		</script>
+
 		<script>
 			window.fbAsyncInit = function() {
 				FB.init({
@@ -355,56 +344,42 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 			};
 
 		</script>
-<!-- End of Facebook Scripts -->
+		<!-- End of Facebook Scripts -->
+		
+		
 	</head>
-	
-<!-- Document Body -->
 	<body>
+		<div id="fb-root"></div>
 		<div id="daddy">
 			<div id="header">
 				<div id="logo">
+
 					<a href="./"><img src="images/logo.gif" alt="Your Company Logo" width="318" height="85" /></a><span id="logo-text"><a href="./"></a></span>
 				</div><!-- logo -->
 				<div id="menu">
 					<ul>
 						<li>
-							<a href="index.php" id="active">Home</a>
+							<a href="index.php" >Home</a>
 						</li>
-						
-						<!-- rendered if logged in and registered -->
-						<?php if ($_SESSION['loggedin']){
-						?>
 						<li>
+
 							<a href="profile.php">Profile</a>
 						</li>
 						<li>
-							<a href="competition.php">Challenges</a>
+							<a href="competition.php" id="active">Challenges</a>
 						</li>
 						<li>
-							<a href="commutes.php">Commutes</a>
+							<a href="commutes.php" >Commutes</a>
+
 						</li>
-						<li>
-							<a href="team.php">Teams</a>
-						</li>
-						<?php }?>
-						<!-- end conditional render -->
-						<?php if ($_SESSION['admin']){
-						?>
-						<li>
-							<a href="admin.php">Administration</a>
-						</li>
-						<?php }?>
-						<?php if (!$_SESSION['loggedin']){
-						?>
 						<li>
 							<a href="./">About</a>
 						</li>
 						<li>
 							<a href="./">Contact</a>
 						</li>
-						<?php }?>
-						
 					</ul>
+
 				</div><!-- menu -->
 				<div id="headerimage">
 					<div id="slogan"></div>
@@ -412,146 +387,128 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 				<!-- headerimage -->
 			</div>
 			<!-- header -->
-			<div id="content">
-				<div id="cA">
-					<div class="Ctopleft"></div>
-	
-					<div id="facebooklogin">
-						<p class="testimonial">
-							<!-- rendered if user is not logged in -->
-							<?php if (!$fbme):
-							?>
-							<!-- Facebook Login Button-->
-							<a href='#' id='login' class='customLoginLink'><img src="images/facebook_icon.jpg" alt="Facebook Icon" width="87" height="100"/></a>
-							<script type='text/javascript'>
-								$('#login').click(function(event) {
-									FB.login(function(response) {
-										if(response.session) {
-											if(response.perms) {
-												// user is logged in and granted some permissions.
-												// perms is a comma separated list of granted permissions
-											} else {
-												// user is logged in, but did not grant any permissions
-											}
-										} else {
-											// user is not logged in
-										}
-									}, {
-										perms : 'publish_stream, read_stream, email, user_birthday'
-										//permissions granted by user
-									});
-								});
+			<div id="cA">
+				<div class="Ctopleft"></div>
 
-							</script>
-							<?php else:?>
-								
-							<!-- Facebook Logout Button-->
-							<a href='#' id='logout' class='customLoginLink'><img src="images/facebook_icon.jpg" alt="Facebook Icon" width="87" height="100"/></a>
-							<script type='text/javascript'>
-								$('#logout').click(function(event) {
-									FB.logout(function(response) {
-										window.location = "http://limbotestserver.com/logout.php"
-									});	
-								});
-							</script>
-							<!-- end conditional render -->
-							<?php endif;?>
-						</p>
-					</div>
-					<div id="googlelogin">
-						<p class="testimonial">
-							<!-- rendered if user is logged into Google --> 
-							<?php if(@$_REQUEST['openid_mode'] === 'id_res'):
-							?>
-							<!-- Google log out button -->
-							<a href="logout.php"
-							onclick="myIFrame.location='https://www.google.com/accounts/Logout';StartPollingForCompletion();return false;"> <img src="images/google_icon.jpg"/></a>
-							<?php else:?>
-							<a href="<?php echo $_SERVER['PHP_SELF'] . '?openid_mode=checkid_setup&openid_identifier=google.com/accounts/o8/id' ?>" id="LoginWithGoogleLink"><span class="google"><img src="images/google_icon.jpg" /></a>
-							<?php endif;?>
-							<!-- end Google log out button -->
-						</p>
-					</div>
-					<br/>
-					<br/>
-					<br/>
-					&nbsp;&nbsp;&nbsp;
-				</div><!-- cA -->
+				<!-- <h3>SEARCH &nbsp; &nbsp; &nbsp; <fb:login-button autologoutlink="true" onlogin="Log.info('onlogin callback')" perms="publish_stream, read_stream, email, user_birthday"></fb:login-button></h3> -->
+				<!-- <div id="search">
+					<input type="text" class="search" />
+					<input type="submit" class="submit" value="Find" />
+				</div><!-- search --> 
+				<p>
+					&nbsp;
+				</p>
+				<!-- <h3>Your Current Points(currently miles for testing):</h3>
+				<div id="facebooklogin" style="background-image:url(images/bg_points.jpg); background-position:center; background-repeat:no-repeat; height:100px">
+					<p style="text-align:center; font-size:36px; padding-top:40px; color:#FC0">
+											</p>
+				</div>
+				<div id="googlelogin">
+					<h3 style="padding-top:10px">Your Challenges:</h3>
+
+					<ul style="padding-left:5px">
+						<li>
+							<a href="./" title="Challenge A">Challenge A</a>
+						</li>
+					</ul>
+				</div> -->
+			</div><!-- cA -->
+			<div id="content">
+
 				<div id="cB">
 					<div class="Ctopright"></div>
 					<div id="cB1">
-						<!-- main body text -->
-						<div class="news">
-							<?php if(@$_REQUEST['openid_mode'] !== 'id_res' && !$fbme && !$glogin) {
+						
+						<?php if(@$_REQUEST['openid_mode'] === 'id_res' && $registered) {
 							?>
-							<h3>Welcome to the GREEN COMMUTE CHALLENGE!</h3>
-							<p>
-								The Green Commute Challenge is a point-based competition centered on getting people to use alternative forms of transportation as they go about their everyday lives.
-							</p>
-						</div>
-						<!-- not sure why there are multiple divs-->
-						<div class="news">
-							<p>
-								Registering with us requires a <a href="http://www.facebook.com/">Facebook</a> or <a href="https://accounts.google.com/ServiceLogin?hl=en&continue=http://www.google.com/">Google</a> account and just a few clicks. As a user, you'll be able to enter your daily commutes into the system. Just choose a commute type and enter your miles travelled and you'll be awarded a point value. Rack up your points, and compare how you're doing with your friends with our search feature.
-							</p>
-						</div>
-						<div class="news">
-							<p>
-								From time to time, a competition may be created by the system administrator. Any user or team of users will be able to enter any number of active competitions, and the points earned will be put toward the competition. Have the most points at the end of a competition? You may be eligible for prizes.
-							</p>
-						</div>
-						<div class="news">
-							<p>
-								Commute. Enter. Win. It's that easy. Get started by logging in with your Facebook or Google account to the left.
-							</p>
-						</div>
-						<div class="news">
-							<p>
-								Good luck!
-							</p>
-							<!-- rendered if user is logged into Facebook but not present in the system -->
+							<?php
+							$_SESSION['user']=$_REQUEST['openid_ext1_value_email'];
+							//Set user as logged in for Session
+							$_SESSION['loggedin']=true;
+							?>
+							You are logged into Google as <?php echo "{$_REQUEST['openid_ext1_value_first']} {$_REQUEST['openid_ext1_value_last']} - {$_REQUEST['openid_ext1_value_email']}"
+							?>
+							<br/>
+							<br/>
+							<br/>
 							<?php }?>
-							<?php if($fbme ||  @$_REQUEST['openid_mode'] == 'id_res' || $glogin ) {
+							<?php if ($fbme && $registered){
 							?>
-							<?php if (! $registered){
+							You are logged into Facebook <!-- Display user name-->
+							<?php
+							foreach ($userInfo as $result) {
+								print "as " . ($result['name']) . " - " . ($result['email']) . "</br>";
+							}
 							?>
-							<form name="register" action="<?=$config['baseurl']?>" method="post">
-								<h3>Welcome, please enter your information below(currently all fields are required)</h3>
-								<p>
-									First Name:
-									<input type="text" class="search" id="first" name="first" value="<?php print $firstname ?>"  />
-								</p>
-								<p>
-									Last Name:
-									<input type="text" class="search" id="last" name="last" value="<?php print $lastname ?>" />
-								</p>
-								<p>
-									Phone(No Dashes):
-									<input type="text" class="search" id="phone" name="phone" />
-									<?php
-									print $error;
-									?>
-								</p>
-								<p>
-									Age:
-									<input type="text" class="search" id="age" name="age" />
-								</p>
-								<p>
-									Weight:
-									<input type="text" class="search" id="weight" name="weight" />
-								</p>
-								<h3 style="padding-top:20px">Contact Information</h3>
-								<p>
-									Contact E-mail:
-									<input type="text" class="search"  id="prefemail" name="prefemail" value="<?php print $email ?>" />
-								</p>
-								<input type="hidden" name="email" id = "email" value="<?php print $email ?>">
-								<input type="submit" value="Register"/>
-								<br/>
-								<br/>
+
+							<?php }
+							echo "<br/>";
+							echo "<br/>";
+							echo "<br/>";
+							echo "<br/>";?>
+																												
+						<h3>Join New Challenge</h3>
+						<div style="height: 300px;" class="news">
+							<form name="JoinCompetition" action="JoinCompetition.php" method="post">
+							
+								<?php
+								//Connect To Database
+								$hostname='it391test.db.8404538.hostedresource.com';
+								$username='it391test';
+								$password='Binoy01';
+								$dbname='it391test';
+								
+								mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
+								mysql_select_db($dbname);
+								
+							
+								$query = 'SELECT userID FROM USER where loginemail = ' . "'" . $user . "'";
+								$result = mysql_query($query);
+								if ($result) {
+									while ($row = mysql_fetch_array($result)) {
+										$id = $row['userID'];
+									}
+								}
+								echo "<input type='hidden' name='userID' value=".$id.">";
+								echo "Join Competition:";
+								echo "<select name='compID'>";
+								$query1 = "SELECT * FROM COMPETITION";
+								$result1 = mysql_query($query1);
+								while($row1 = mysql_fetch_array($result1))
+								{
+									$name = $row1["compName"];
+									$compID = $row1["compID"];
+									echo "<option value='".$compID."'>".$name."</option>";
+								}
+								echo "</select>";
+								
+								echo $id;
+								
+								echo "<br/>";
+								echo "<br/>";
+								echo "<br/>";
+								echo "<br/>";
+								echo "<br/>";
+								echo "<center><input type='submit' value='Join Competition'></center>";
+								echo "<br/>";
+								echo "<br/>";
+								echo "<br/>";
+
+								echo "</form>";
+								
+								$form = '<form action="joinComp.php" method="post">';
+								$input1 = '<input type="hidden" name="user" value="'.$id.'" />';
+								$input2 = '<input type="hidden" name="comp" value="'.$compID.'" />';
+								$closeform = '</form>';	
+								$button = $form.$input1.$input2.$closeform;
+								?>
+								
+	
+								
 							</form>
-							<?php }?>
-							<?php }?>
+							<?php if (count($_POST)>0) echo "Form Submitted!"; ?>
+
+					
 						</div>
 						<!-- Facebook/Google/Twitter Buttons -->
 						<script type="text/javascript">
@@ -567,6 +524,7 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 						</script>
 						<center>
 							<table>
+
 								<tr>
 									<td><div class="fb-like" data-send="false" data-href="http://limbotestserver.com" data-layout="button_count" data-width="45" data-show-faces="false"></div></td>
 									<td><div class="g-plusone" data-size="medium" data-href="http://limbotestserver.com"></div> &nbsp; </td>
@@ -574,24 +532,16 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 								</tr>
 							</table>
 						</center>
+
 						<!-- End Facebook/Google/Twitter Buttons -->
 					</div><!-- cB1 -->
 					<div id="cB2">
-						<h3>CHALLENGE NEWS</h3>
+						<h3>Current Competitions</h3>
 						<div class="about">
-							<ul>
-								<li>
-									Challenge website is under constructon
-								</li>
-								<li>
-									Challenges begin MAY 2012
-								</li>
-								<li>
-									Look for our Android mobile app
-								</li>
-							</ul>
+						<!-- add current competitions here -->
 						</div>
 					</div><!-- cB2 -->
+
 				</div><!-- cB -->
 				<div class="Cpad">
 					<br class="clear" />
@@ -599,18 +549,24 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 				</div><!-- Cpad -->
 			</div><!-- content -->
 			<div id="properspace"></div><!-- properspace -->
+			<!-- Place this render call where appropriate -->
 		</div><!-- daddy -->
+
 		<div id="footer">
 			<div id="foot">
 				<div id="foot1">
 					<a href="./">it391project@gmail.com</a> - <a href="./"></a>
 				</div><!-- foot1 -->
 				<div id="foot2">
-				Copyright Fall 2011 IT391 Designed by <a href="http://groups.google.com/group/itk391fall2011/about?hl=en" title="it391">Google Group IT391<span class="star">*</span></a>
+					Copyright 2011, IT391. Designed by <a href="http://www.symisun.com/" title="We digitalize your ambitions">SymiSun<span class="star">*</span></a>
+
+					<script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
 				</div><!-- foot1 -->
 			</div><!-- foot -->
 		</div><!-- footer -->
 		<!-- needed to log out of google -->
 		<iframe id="myIFrame" width="0" height="0" ></iframe>
 	</body>
-</html>
+	<!--Sends user back to home page if not logged into Facebook -->
+
+	</html>

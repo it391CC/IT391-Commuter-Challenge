@@ -41,8 +41,13 @@ if (isset($_GET['email'])) {
 						$desc = $row['description'];
 						$miles = $row['mileage'];
 						$cid = $row['commuteID'];
-
-
+	$query2 = 'Select commtype FROM COMMUTE WHERE commuteID = '.$cid;
+	$result2 = mysql_query($query2);
+				if ($result2) {
+					while ($row2 = mysql_fetch_array($result2)) {
+					$type = $row2['commtype'];
+					}
+				}
 						//print results to page
 						echo '<div id="favorite">'."\r";	
 						echo '<div id="type" >'.$type.'</div>'."\r";

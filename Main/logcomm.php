@@ -12,6 +12,7 @@ mysql_select_db($dbname);
 	$desc = $_GET['desc'];
 	$fav = $_GET['fav'];
 	
+	
 //Get userID using email
 if (isset($_GET['email'])) {
 	$email = $_GET['email'];
@@ -24,9 +25,20 @@ if (isset($_GET['email'])) {
 
 					}
 				}
-
+}	
+if (isset($_GET['type'])) {
+	$type = $_GET['type'];	
+	
+	$query2 = 'SELECT commuteID FROM COMMUTE where commtype = ' . "'" . $type . "'";
+	$result = mysql_query($query2);
+	if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+						$cid = $row['commuteID'];
+					}
 	
 }
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -36,9 +48,9 @@ if (isset($_GET['email'])) {
 </head>	
 <body>
 	<?php
-							$query = 'INSERT INTO USERCOMMUTE (userID,commuteDate,mileage,isFavorite,description)  VALUES(' . $id . ',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ','.$fav.',' . '"' . $desc . '"' . ')';
-							echo $query;
-							$result = mysql_query($query);
+							$query3 = 'INSERT INTO USERCOMMUTE (userID,commuteID,commuteDate,mileage,isFavorite,description)  VALUES(' . $id . ','.$cid.',' . 'CURRENT_TIMESTAMP' . ',' . $miles . ','.$fav.',' . '"' . $desc . '"' . ')';
+							echo $query3;
+							$result3 = mysql_query($query3);
 	?>
 </body>	
 </html>

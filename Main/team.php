@@ -1,36 +1,101 @@
 <?php
 
-//Session
 session_start();
 
-//Connect To Database
-$hostname='it391test.db.8404538.hostedresource.com';
-$username='it391test';
-$password='Binoy01';
-$dbname='it391test';
+require("php_functions.php");
 
-mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
-mysql_select_db($dbname);
+$userID = getUserID();
+$isAdmin = isUserAdmin();
 
+$message = "";
+$message2 = "";
 
-$email = $_SESSION['user'];
-$admin = $_SESSION['admin'];
+if(isset($_POST["doAddToTeam"]))
+{
+	$teamID = $_POST["teamID"];
+	$compID = getTeamCompID($teamID);
+	
+	// Validation
+	$valid = true;
+	if(isUserOnTeamInComp($userID,$compID)) {
+		$message = "You are already on a team in this competition!";
+		$valid = false;	
+	}
+	
+	if($valid) {
+		if(!addUserToTeam($userID, $teamID, 0)) {
+			echo "Could not join team.";	
+		}
+	}
+}
 
-$query = 'SELECT userID FROM USER where loginEmail = ' . "'" . $email . "';";
-$result = mysql_query($query);
-				if ($result) {
-					while ($row = mysql_fetch_array($result)) {
-						
-						$id = $row['userID'];
-						//echo $id;
+if(isset($_POST["doCreateTeam"]))
+{
+	$compID = $_POST["compID"];
+	$teamName = $_POST["teamName"];
+	
+	// Validation
+	$valid = true;
+	if(isUserOnTeamInComp($userID,$compID)) {
+		$message = "You are already on a team in this competition!";
+		$valid = false;	
+	}
+	if(strlen($teamName) > 50)
+	{
+		$message = "Team names can be a maximum of 50 characters";
+		$valid = false;	
+	}
+	
+	if($valid) {
+		if(!createTeam($compID, $teamName)) {
+			echo "Could not create team!";	
+		} else {
+			$teamID = getTeamID($teamName);
+			if(!addUserToTeam($userID,$teamID,1)) {
+				echo "Was able to create team, but not add user to it!";	
+			}
+		}
+	}
+}
 
-					}
-				}
-				
-$query = 'Select isSpokesperson from USERTEAM where userID= ' .$id;
-$sesSpoke = mysql_query($query);
-				
+if(isset($_POST["doRemoveFromTeam"]))
+{
+	$teamID = $_POST["teamID"];
+	
+	$valid = true;
+	if(isUserSpokesperson($userID,$teamID) && getNumSpokespersons($teamID) == 1) {
+		$message2 = $message2."You cannot leave a team if you are the last spokesperson!<br>Please promote someone else to be spokesperson before you leave.<br>";
+		$valid = false;
+	}
+	
+	if($valid)
+	{
+		if(!removeUserFromTeam($userID,$teamID)) {
+			echo "Was unable to remove user from team.";	
+		}
+	}
+}
+
+if(isset($_POST["doSetUserSpokesperson"]))
+{
+	$oUserID = $_POST["userID"];
+	$teamID = $_POST["teamID"];
+	
+	$valid = true;
+	if(!isUserSpokesperson($userID,$teamID)) {
+		$message2 = $message2."You cannot make someone else a spokesperson unless you are a spokesperson!";
+		$valid = false;
+	}
+	
+	if($valid)
+	{
+		if(!setUserAsSpokesperson($oUserID,$teamID)) {
+			echo "Was unable to set user as spokesperson.";	
+		}
+	}
+}
 ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -91,134 +156,133 @@ $sesSpoke = mysql_query($query);
 			<div id="cA">
 				<div class="Ctopleft"></div>
 					<table class="testimonial"><tr><td>
-				<?php
-								echo "<h3>Join a Team</h3><br>";								
-								echo "<form name='addToTeam' action='addtoteam.php' method='post'>";
-								echo "<input type='hidden' name='usersID' value=".$id.">";
-								echo "<center><select name='teamName'>";
-								$query = "SELECT * FROM TEAM";
-								$result = mysql_query($query);
-								while($row = mysql_fetch_array($result))
-								{
-									$name = $row["name"];
-									echo "<option value='".htmlspecialchars($name)."'>".$name."</option>";
-								}
-								echo "</select>";
-								echo "<br><input type='submit' value='Join'></center><br>";
-								echo "</form>";
-								echo "<center>OR</center><br><form name='createTeam' action='createteam.php' method='post'>";
-								echo "<h3>Create a Team</h3><br>Name: <input type='text' name='teamName'><br>";
-								echo "<input type='hidden' name='usersID' value=".$id.">";
-								echo "To Participapte In:";
-								echo "<select name='compID'>";
-								$query = "SELECT * FROM COMPETITION";
-								$result = mysql_query($query);
-								while($row = mysql_fetch_array($result))
-								{
-									$name = $row["compName"];
-									$compID = $row["compID"];
-									echo "<option value='".$compID."'>".$name."</option>";
-								}
-								echo "</select>";
-								echo "<br/>";
-								echo "<center><input type='submit' value='Create Team'></center>";
-								echo "</form>";
-				?>	
-	</td></tr></table>
+                    
+                    <h3>Join a Team</h3><br>
+                    <center><form name="addtoteam" action="team.php" method="post">
+                    <input type="hidden" name="doAddToTeam" value="true">
+                    <select name="teamID">
+                    <?php
+                        connectToDatabase();
+                        
+                        $query = "SELECT * FROM TEAM";
+                        $result = mysql_query($query);
+                        while($row = mysql_fetch_array($result))
+                        {
+                            $teamID = $row["teamID"];
+                            $name = $row["name"];
+                            echo "<option value=".$teamID.">".$name."</option>";
+                        }
+                        
+                        disconnectFromDatabase();
+                    ?>
+                    </select><br>
+                    <input type="submit" value="Join Team"><br>
+                    </form></center>
+                    <center><br>OR<br></center>
+                    <form name="createateam" action="team.php" method="post">
+                    <h3>Create a Team</h3><br>
+                    <input type="hidden" name="doCreateTeam" value="true">
+                    Name: <input type="text" name="teamName"><br>
+                    To Participate In: <select name="compID">
+                    <?php
+                        connectToDatabase();
+                        
+                        $query = "SELECT * FROM COMPETITION";
+                        $result = mysql_query($query);
+                        while($row = mysql_fetch_array($result))
+                        {
+                            $compID = $row["compID"];
+                            $compName = $row["compName"];
+                            echo "<option value=".$compID.">".$compName."</option>";
+                        }
+                        
+                        disconnectFromDatabase();
+                    ?>
+                    </select>
+                    <center><input type="submit" value="Create Team!"></center>
+                    </form>
+                    <br><center><b><?php echo $message; ?></b></center><br>
+					</td></tr></table>
 			</div><!-- cA -->
 			<div id="content">
 				<div id="cB">
 					<div class="Ctopright"></div>
 	<div id="cB1">
-				<h3>Your Team Information</h3>
 				<div class="news">
-					
-                    <!-- MY TEAM INFORMATION -->
+				<h3>My Teams</h3><br>
+                These are the teams you are currently on.<br><br><hr>
+					<!--<h3>TEST2</h3>-->
                     <?php
-						//echo "EMAIL: '".$id."'<br>";
-						if($id != "")
-						{
-							//echo 'My userID is '.$id.'<br>';
+					
+					if($userID==0) {
+						echo "User not logged in.";
+						exit();
+					}
+					
+					connectToDatabase();
+					
+					$query = "SELECT * FROM USERTEAM WHERE userID = ".$userID;
+					$result = mysql_query($query);
+					
+					disconnectFromDatabase();
+					
+					if(mysql_num_rows($result)==0) {
+						echo "<b>You are not currently on any teams!</b><br>";
+				  	} else {
+						while($row = mysql_fetch_array($result)) {
+							// FOR EVERY TEAM
+							$teamID = $row["teamID"];
+							$teamName = getTeamName($teamID);
+							$teamTotalPoints = getTeamTotalPoints($teamID);
+							$compID = getTeamCompID($teamID);
+							$compName = getCompName($compID);
+							$weAreSpokes = isUserSpokesperson($userID,$teamID);
 							
-							$query = "SELECT teamID from USERTEAM WHERE userID=".$id;
-							$result = mysql_query($query);
-							
-							if(mysql_num_rows($result)==0) {
-								echo "<b>You are not currently on any teams!</b><br>";	
-							}
-							
-							while($row = mysql_fetch_array($result)){
-								
-								$teamID = $row["teamID"];
-								//echo $teamID . "<br>";
-							
-								$query = "SELECT name FROM TEAM WHERE teamID=".$teamID;
-								$result2 = mysql_query($query);
-								while($row = mysql_fetch_array($result2)) {
-									$teamName = $row["name"];	
-								}
-								
-								echo "<center><h1>".$teamName."</h1></center><br>";
-								//echo "Total Points: <i>[TODO: Place Team Points]</i><br><br>";
-								echo "Total Points: <h2>551</h2><br><br>";
-								echo "<br/>";
-								
-								
-								echo "Other users on your team: <br/>";
-								$query = "SELECT * FROM USERTEAM WHERE teamID=".$teamID;
-								$result3 = mysql_query($query);
-								echo "<ol>";
-								while($row = mysql_fetch_array($result3)) {
-									$userID = $row["userID"];
-									$isSpokes = $row["isSpokesperson"];
-									$query = "SELECT * FROM USER WHERE userID=".$userID;
-									$result4 = mysql_query($query);
-									while($row = mysql_fetch_array($result4)) {	
-										$fName = $row["firstName"];
-										$lName = $row["lastName"];
-										//$isAdmin = $row["isAdmin"];
-										
-										if($sesSpoke) {
-											if($isSpokes){
-												$button = '<input type="button" value="Already Spokesperson" disabled="disabled" />';
-											}elseif(!$isSpokes){
-												$flName = $fName.$lName;
-												$cmsg = "Are you sure you want to promote ".$flName." to spokesperson?";
-												$form = '<form action="promotespokesperson.php" method="post" onSubmit="return subconfirm('.$cmsg.')" >';
-												$input1 = '<input type="hidden" name="user" value="'.$userID.'" />';
-												$input2 = '<input type="hidden" name="team" value="'.$teamID.'" />';
-												$sub = '<input type="submit" value="Promote to Spokesperson" />';
-												$closeform = '</form>';	
-												$button = $form.$input1.$input2.$sub.$closeform;
-											}
-										}else{
-											$button = "";
-										}
-										if($isSpokes)
-											echo "<b>";
-										echo "<li>".$fName." ".$lName." ".$button."</li>";
-										if($isSpokes)
-											echo "</b>";
-									}
-								}
-								
-								echo "</ol><br/>";
-								echo "<form name='removeFromTeam' action='removefromteam.php' method='post'>";
-								echo "<input type='hidden' name='usersID' value='" . $id . "'>";
-								echo "<input type='hidden' name='teamID' value='" . $teamID . "'>";
-								echo "<input type='submit' value='Leave Team'>";
+							echo"<h3>".$teamName."</h3>";
+							echo"<i>Participating in challenge '".$compName."'</i><br>";
+							echo "Total Points: ".$teamTotalPoints;
+							echo "<br>Other Members On This Team:<br>";
+							echo "<ul>";
+							connectToDatabase();
+							$uquery = "SELECT * FROM USERTEAM WHERE teamID=".$teamID;
+							$uresult = mysql_query($uquery);
+							disconnectFromDatabase();
+							while($urow = mysql_fetch_array($uresult)) {
+								$oUserID = $urow["userID"];
+								$oUserName = getUserFullName($oUserID);
+								$isSpokesperson = isUserSpokesperson($oUserID,$teamID);
+								if($isSpokesperson)
+									echo "<b>";
+								echo "<li>".$oUserName;
+								if($weAreSpokes) {
+								echo "<form action='team.php' method='post'>";
+								echo "<input type='hidden' name='doSetUserSpokesperson' value='true'>";
+								echo "<input type='hidden' name='userID' value=".$oUserID.">";
+								echo "<input type='hidden' name='teamID' value=".$teamID.">";
+								echo "<input type='submit' value='Promote to Spokesperson'>";
 								echo "</form>";
-								
 								}
-								echo "<br><br><i>*Note: Team spokespersons names are in bold.</i><br>";
+								echo "</li>";
+								if($isSpokesperson)
+									echo "</b>";
+							}
+							echo "</ul><br>";
 							
+							// Team Actions
+							echo "<form name='removefromteam' action='team.php' method='post'>";
+							echo "<input type='hidden' name='doRemoveFromTeam' value='true'>";
+							echo "<input type='hidden' name='teamID' value=".$teamID.">";
+							echo "<input type='submit' value='Leave This Team'>";
+							echo "</form><br>";
+							
+							echo "<hr>";
 						}
-						else
-						{
-							// User is not logged in.
-							echo 'You need to be logged in to view teams!<br>';
-						}
+						
+					}
+					
 					?>
+                    <br><center><b><?php echo $message2; ?></b></center><br>
+                    <i>*Note: Spokespersons names are in bold.</i><br>
                     
 				</div>
 			</div><!-- cB1 -->
@@ -226,17 +290,24 @@ $sesSpoke = mysql_query($query);
 				&nbsp;<br/>
 				<div class="about">
 					
-                    <center><h3>Teams</h3></center><br>
+                    <h3>Teams</h3>
+                    <br>
+                    <ol>
                     <?php
-						$query = "SELECT * FROM TEAM";
-						$result = mysql_query($query);
-						echo "<ol>";
-						while($row = mysql_fetch_array($result)) {
-							$teamName = $row["name"];
-							echo "<li>".$teamName."</li>";
-						}
-						echo "</ol>";
+					
+					connectToDatabase();
+					$query = "SELECT name FROM TEAM";
+					$result = mysql_query($query);
+					disconnectFromDatabase();
+
+					while($row = mysql_fetch_array($result))
+					{
+						$teamName = $row["name"];
+						echo "<li>".$teamName."</li>";	
+					}
+					
 					?>
+                    </ol>
                                         
 				</div>
 			</div><!-- cB2 -->
