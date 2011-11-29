@@ -32,12 +32,13 @@
 
  */
 
+ 
+
 
 
 //Google Session
 
 session_start();
-
 
 
 //Connect To Database
@@ -54,7 +55,7 @@ $usertable='usercommute';
 
 $yourfield = 'mileage';
 
-
+						
 
 $user = $_SESSION['user'] ;
 
@@ -83,7 +84,33 @@ $query = 'SELECT userid FROM USER where loginemail = ' . "'" . $user . "'";
 					}
 
 				}
-
+				//echo '<script language=javascript>alert('.$id.')</script>';
+//bonus				
+function subBonus($id,$bid,$bdate)
+ {
+     //echo '<script language=javascript>alert('.$id.$bid.$bdate.')</script>';
+     
+     //echo $id." ".$bid." ".$bdate;
+     $query = 'INSERT INTO USERBONUS (userID,bonusID,bonusDate) VALUES ('.$id.','.$bid.',"'.$bdate.'")';
+	 $result = mysql_query($query);
+	
+	 
+	 if ($result)
+	 {
+	 	echo '<script language=javascript>alert("Your bonus has been logged.")</script>';
+	 }else	 	
+	 	echo '<script language=javascript>alert("An error has occured please try again")</script>';
+ }
+ 
+ if (isset($_POST['bonusname']))
+ {
+ 	//echo "ppoooooop";
+ 	$bdate = isset($_REQUEST["date2"]) ? $_REQUEST["date2"] : "";;
+	$bid = $_POST['bonusname'];
+	//echo $bdate;
+	//echo '<script language=javascript>alert("'.$bdate.'")</script>';	
+ 	subBonus($id,$bid,$bdate);
+ }
 
 
 // Post Commute (add support for favorite)
@@ -415,6 +442,10 @@ xmlns:fb="http://www.facebook.com/2008/fbml">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 		<title>Green Commute Challenge</title>
+		
+		<link rel="stylesheet" href="calendar/calendar.css" /> 
+		
+		<script language="javascript" src="calendar/calendar.js"></script>
 
 		<link rel="stylesheet" href="style.css" />
 
@@ -637,6 +668,47 @@ var googleOpener = popupManager.createPopupOpener({
 		</script>
 
 		<!-- End of Facebook Scripts -->
+		
+	
+	<!-- JS for AJAX -->
+		<script type="text/javascript">
+			function showValue(bid){
+				if (bid == 0){
+					document.getElementById("points").innerHTML="";
+ 					return;
+				}
+				if (window.XMLHttpRequest)
+  					{// code for IE7+, Firefox, Chrome, Opera, Safari
+ 						xmlhttp=new XMLHttpRequest();
+ 					}
+				else
+  					{// code for IE6, IE5
+  						xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  					}
+				xmlhttp.onreadystatechange=function()
+ 					{
+  						if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    						{
+    							document.getElementById("points").innerHTML=xmlhttp.responseText;
+    						}
+  					}
+				xmlhttp.open("GET","bonus.php?bonusID="+bid,true);
+				xmlhttp.send();
+			}
+		</script>
+		
+		<script type="text/javascript">
+			function hidden()
+			{
+				//var a = document.getElementById("date2").value;
+				//var b = document.getElementById("date").value;
+				alert("n");
+				//alert("dood " + form.getElementById("date123")+
+				//" " +document.getElementById("date12"));
+				
+				
+			}
+		</script>
 
 	</head>
 
@@ -751,7 +823,7 @@ var googleOpener = popupManager.createPopupOpener({
 
 						<h3>Transportation Type / Miles Travelled</h3>
 
-						<div style="height: 300px" class="news">
+						<div style="height: 200px" class="news">
                         
                         <?php
 						
@@ -771,9 +843,43 @@ var googleOpener = popupManager.createPopupOpener({
 						echo "Description:<br><textarea rows='5' cols='25' name='description'></textarea><br>";
 						echo "Log as Favorite <input type='checkbox' name='isfavorite'/><br>";
 						echo "<input type='submit' value='Log Commute' />";
+						echo "</form>";						
+											
+						?>
+						
+						</div>
+												
+						<h3>Bonus Opportunitys</h3>
+						<div name="Bonus" style="height: 150px" class="news">
+						
+						
+						<?php 
+						
+						$query = "SELECT * FROM BONUS";
+						$result = mysql_query($query);
+						$tnow = strtotime("now");
+						//print $tnow;						
+						echo "<form name='logbonus' action='commutes.php' method='post' onsubmit='return hidden()'>";
+						echo "Bonuses: <select style='width:200px' name='bonusname' onchange='showValue(this.value)'>";
+						echo "<option value='0'>Select a Bonus</option>";
+						while($row = mysql_fetch_array($result)){
+							$bid = $row["bonusID"];
+							$compid = $row["compID"];							
+							$desc = $row["description"];
+							
+								echo "<option value='".$bid."'>".$desc."</option>";
+							
+							
+						}
+						echo "</select><br/>";
+							
+						echo "<span id='points'></span>";
+						echo '<input type="hidden" name="date12" value="0000-00-00"/>';
 						echo "</form>";
 						
 						?>
+						
+						</div>
 
 							<!--<form name="logcommute" action="<?=$config['baseurl . commutes.php']?>" method="post">
 
@@ -813,7 +919,7 @@ var googleOpener = popupManager.createPopupOpener({
 
 							<?php print $message; ?>
 
-						</div>
+						
 
 						<!-- Facebook/Google/Twitter Buttons -->
 
