@@ -3,7 +3,7 @@
 session_start();
 
 require("php_functions.php");
-
+connectToDatabase();
 $userID = getUserID();
 $isAdmin = isUserAdmin();
 
@@ -13,7 +13,7 @@ $message = "";
 function subBonus($id,$bid,$bdate)
  {
      //echo '<script language=javascript>alert('.$id.$bid.$bdate.')</script>';
-     connectToDatabase();
+    // connectToDatabase();
      //echo $id." ".$bid." ".$bdate;
      $query = 'INSERT INTO USERBONUS (userID,bonusID,bonusDate) VALUES ('.$id.','.$bid.',"'.$bdate.'")';
 	 $result = mysql_query($query);
@@ -25,7 +25,7 @@ function subBonus($id,$bid,$bdate)
 	 }else	 	
 	 	echo '<script language=javascript>alert("An error has occured please try again")</script>';
 	 	
-	 disconnectFromDatabase();	
+	 //disconnectFromDatabase();	
  }
  
  if (isset($_POST['bonusname']))
