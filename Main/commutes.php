@@ -9,6 +9,33 @@ $isAdmin = isUserAdmin();
 
 $message = "";
 
+//bonus				
+function subBonus($id,$bid,$bdate)
+ {
+     //echo '<script language=javascript>alert('.$id.$bid.$bdate.')</script>';
+     
+     //echo $id." ".$bid." ".$bdate;
+     $query = 'INSERT INTO USERBONUS (userID,bonusID,bonusDate) VALUES ('.$id.','.$bid.',"'.$bdate.'")';
+	 $result = mysql_query($query);
+	
+	 
+	 if ($result)
+	 {
+	 	echo '<script language=javascript>alert("Your bonus has been logged.")</script>';
+	 }else	 	
+	 	echo '<script language=javascript>alert("An error has occured please try again")</script>';
+ }
+ 
+ if (isset($_POST['bonusname']))
+ {
+ 	//echo "ppoooooop";
+ 	$bdate = isset($_REQUEST["date2"]) ? $_REQUEST["date2"] : "";;
+	$bid = $_POST['bonusname'];
+	//echo $bdate;
+	//echo '<script language=javascript>alert("'.$bdate.'")</script>';	
+ 	subBonus($userID,$bid,$bdate);
+ }
+
 // Check if this page is the result of a form submission.
 if(isset($_POST["doLogCommute"]))
 {
@@ -117,6 +144,46 @@ $sesSpoke = 0;
 			}
 			
 		</script>
+		
+		<!-- JS for AJAX -->
+		<script type="text/javascript">
+			function showValue(bid){
+				if (bid == 0){
+					document.getElementById("points").innerHTML="";
+ 					return;
+				}
+				if (window.XMLHttpRequest)
+  					{// code for IE7+, Firefox, Chrome, Opera, Safari
+ 						xmlhttp=new XMLHttpRequest();
+ 					}
+				else
+  					{// code for IE6, IE5
+  						xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  					}
+				xmlhttp.onreadystatechange=function()
+ 					{
+  						if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    						{
+    							document.getElementById("points").innerHTML=xmlhttp.responseText;
+    						}
+  					}
+				xmlhttp.open("GET","bonus.php?bonusID="+bid,true);
+				xmlhttp.send();
+			}
+		</script>
+		
+		<script type="text/javascript">
+			function hidden()
+			{
+				//var a = document.getElementById("date2").value;
+				//var b = document.getElementById("date").value;
+				alert("n");
+				//alert("dood " + form.getElementById("date123")+
+				//" " +document.getElementById("date12"));
+				
+				
+			}
+		</script>
 	</head>
 	<body>
 		<div id="daddy">
@@ -162,6 +229,38 @@ $sesSpoke = 0;
                         echo getUserTotalPoints($userID);
                     ?>
                 </p>
+                
+                <br/><br/><br/><br/><br/><br/><h3>Bonus Opportunitys</h3><br/>
+					<div style="height: 300px" class="news">
+
+					
+					<?php 
+						
+						$query = "SELECT * FROM BONUS";
+						$result = mysql_query($query);
+						$tnow = strtotime("now");
+						//print $tnow;						
+						echo "<form name='logbonus' action='commutes.php' method='post' onsubmit='return hidden()'>";
+						echo "Bonuses: <select style='width:200px' name='bonusname' onchange='showValue(this.value)'>";
+						echo "<option value='0'>Select a Bonus</option>";
+						while($row = mysql_fetch_array($result)){
+							$bid = $row["bonusID"];
+							$compid = $row["compID"];							
+							$desc = $row["description"];
+							
+								echo "<option value='".$bid."'>".$desc."</option>";
+							
+							
+						}
+						echo "</select><br/>";
+							
+						echo "<span id='points'></span>";
+						echo '<input type="hidden" name="date12" value="0000-00-00"/>';
+						echo "</form>";
+						
+						?>
+					</div>
+					
                 </div>
 			</div><!-- cA -->
 			<div id="content">
