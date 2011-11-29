@@ -92,6 +92,73 @@ $admin = $_SESSION['admin'];
 								&nbsp;<input type="submit" value="Create"/>
 					</form>	
 				</p>
+				
+				<br/><?php if($admin==1){?>
+				<p>
+					<h3>Add Bonus for Competition</h3>
+					<form name="bonus" action="admin.php" method="post">
+						<!--		&nbsp;Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="text" id="bName" name="bName"/>
+								<br /><br /> -->
+								&nbsp;Description:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="bDesc" name="bDesc"/><br/><br />
+								&nbsp;Point Value:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="bValue" name="bValue"/><br/><br />
+								&nbsp;Competition: &nbsp;
+								<?php
+									echo "<select name='compID2'>";
+									$query = "SELECT * FROM COMPETITION";
+									$result = mysql_query($query);
+									while($row = mysql_fetch_array($result))
+									{
+										$name = $row["compName"];
+										$compID = $row["compID"];
+										echo "<option value='".$compID."'>".$name."</option>";
+									}
+									echo "</select>";
+								?>
+								<br/><br />
+								&nbsp;Start Date: &nbsp;<br/>
+						<?php 
+							require_once('calendar/classes/tc_calendar.php');
+							$myCalendar = new tc_calendar("date3",true);
+							$myCalendar->setIcon("calendar/images/iconCalendar.gif");
+	 						//$myCalendar->setDate(01, 03, 1960);
+							$myCalendar->setPath("calendar/");
+							$myCalendar->setYearInterval(2011,2015);
+							$myCalendar->dateAllow('2011-01-01', '2015-03-01');							
+							$myCalendar->writeScript();
+						?>
+							<br/><br/>
+							&nbsp;End Date: &nbsp;
+						<?php 
+							require_once('calendar/classes/tc_calendar.php');
+							$myCalendar = new tc_calendar("date4",true);
+							$myCalendar->setIcon("calendar/images/iconCalendar.gif");
+							$myCalendar->setPath("calendar/");
+							$myCalendar->setYearInterval(2011,2015);
+							$myCalendar->dateAllow('2011-01-01', '2015-03-01');							
+							$myCalendar->writeScript();
+						?>	
+						<br/><br/><br/><br/>
+						<input type="submit" value="Create" />						
+					</form>
+				</p>
+				
+				<?php
+// Post Bonus
+					if (isset($_POST['bDesc'])) {
+							//$name= $_POST['bName'];
+							$cid = $_POST['compID2'];
+							$date3 = isset($_REQUEST["date3"]) ? $_REQUEST["date3"] : "";
+							$date4 = isset($_REQUEST["date4"]) ? $_REQUEST["date4"] : "";
+							$point = $_POST['bValue'];
+							$desc = $_POST['bDesc'];
+							$query = 'INSERT INTO BONUS (compID,startDate,endDate,point,description) VALUES ("'.$cid.'","'.$date3.'","'.$date4.'","'.$point.'","'.$desc.'");';
+							$result = mysql_query($query);
+							//print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
+						}
+					?>
+	<?php }?>
+				
 				<?php
 // Post Challenge
 					if (isset($_POST['ccvalue'])) {
@@ -272,6 +339,18 @@ require_once('calendar/classes/tc_calendar.php');
 						echo "</ol>";
 					?>
 					<br/>
+					<hr/>
+					<center><h3>Bonuses</h3></center><br/>
+					<?php
+						$query = "SELECT description FROM BONUS";
+						$result = mysql_query($query);
+						echo "<ol>";
+						while($row = mysql_fetch_array($result)) {
+							$desc = $row["description"];
+							echo '<li>'.$desc.'</li>';
+						}
+						echo "</ol>";						
+					?><br/>
 						</div>
 					</div><!-- cB2 -->
 				</div><!-- cB -->
