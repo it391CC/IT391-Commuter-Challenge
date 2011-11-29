@@ -25,15 +25,15 @@ mysql_select_db($dbname);
 	  $myCalendar = new tc_calendar('date2', true);
 	  $myCalendar->setIcon('calendar/images/iconCalendar.gif');
 	  $myCalendar->setPath('calendar/');
-	  $myCalendar->setDateFormat('Y-m-d');
+	//$myCalendar->setDateFormat('Y-m-d');
 	  $myCalendar->setYearInterval(2011, 2015);
-	  $myCalendar->dateAllow($sdate, $edate, false);
-	  $myCalendar->writeScript();	  
-	  
-	  
+	//$myCalendar->dateAllow($sdate, $edate, false);
+	  $myCalendar->writeScript();	   
+		  
+	$datein = '<input type="hidden" name="date123" value="1234-11-11" />';
 	  
 	$submit = ' <input type="submit" value="Log Bonus" />';
-	$response = $point.$submit;
+	$response = $point.$datein.$submit;
 	echo $response;
 	}
 ?>
