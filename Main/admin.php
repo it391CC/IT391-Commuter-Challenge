@@ -50,11 +50,12 @@ $admin = $_SESSION['admin'];
 							<a href="commutes.php" >Commutes</a>
 						</li>
 						<li>
-							<a href="admin.php" id="active">Administration</a>
+							<a href="team.php">Teams</a>
 						</li>
 						<li>
-							<a href="./">Contact</a>
+							<a href="admin.php" id="active">Administration</a>
 						</li>
+						
 					</ul>
 				</div><!-- menu -->
 				<div id="headerimage">
@@ -104,6 +105,74 @@ $admin = $_SESSION['admin'];
 							//print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
 						}
 					?>
+					
+				<br />
+					<h3>Add Special Promotion</h3>
+					<form name="promotion" action="<?=$config['baseurl . competition.php']?>" method="post">
+						&nbsp;Commute:&nbsp;&nbsp;
+						<?php
+						echo "<select name='commuteID'>";
+								$query = "SELECT * FROM COMMUTE";
+								$result = mysql_query($query);
+								while($row = mysql_fetch_array($result))
+								{
+									$type = $row["commtype"];
+									$commuteID = $row["commuteID"];
+									echo "<option value='".$commuteID."'>".$type."</option>";
+								}
+								echo "</select>";
+								?>
+								<br /><br />
+								&nbsp;Value:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" id="cbvalue" name="cbvalue"/><br/><br />
+
+								&nbsp;Start Date:<br/>
+								<?php
+									//get class into the page
+									require_once('calendar/classes/tc_calendar.php');
+								
+									  $myCalendar = new tc_calendar("date3", true);
+									  $myCalendar->setIcon("calendar/images/iconCalendar.gif");
+									  $myCalendar->setPath("calendar/");
+									  $myCalendar->setYearInterval(2011, 2015);
+									  $myCalendar->dateAllow('2011-01-01', '2015-03-01');
+									  $myCalendar->writeScript();
+								
+								?>
+								<br/><br />
+								&nbsp;End Date:<br/>
+								<?php
+									//get class into the page
+									require_once('calendar/classes/tc_calendar.php');
+									
+									  $myCalendar = new tc_calendar("date4", true);
+									  $myCalendar->setIcon("calendar/images/iconCalendar.gif");
+									  $myCalendar->setPath("calendar/");
+									  $myCalendar->setYearInterval(2011, 2015);
+									  $myCalendar->dateAllow('2011-01-01', '2015-03-01');
+									  $myCalendar->writeScript();
+								?>
+								
+								<br /><br />&nbsp;<input type="submit" value="Create"/>
+					</form>	
+				</p>
+				<?php
+					// Post Challenge
+					if (isset($_POST['cbvalue']))
+					{
+						    $cbvalue = $_POST['cbvalue'];
+							$commid = $_POST['commuteID'];
+							$date3 = isset($_REQUEST["date3"]) ? $_REQUEST["date3"] : "";
+							$date4 = isset($_REQUEST["date4"]) ? $_REQUEST["date4"] : "";
+							$cbvalue = $_POST['cbvalue'];
+
+							$query = 'INSERT INTO COMMUTEBONUS (commuteID,startDate,endDate,value) VALUES ('.$commid.',"'.$date3.'","'.$date4.'",'.$cbvalue.');';
+							
+							//echo $query;
+							$result = mysql_query($query);
+							//print "<br/><br/><b>New challenge entered succefully!!</b><br/>Name:&nbsp;&nbsp;".$name."<br/>Start:&nbsp;&nbsp;&nbsp;".$date1."<br/>End:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$date1;
+					}
+				?>
+				
 				
 			</div><!-- cA -->
 			<div id="content">
