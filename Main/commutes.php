@@ -3,11 +3,20 @@
 session_start();
 
 require("php_functions.php");
-connectToDatabase();
+
 $userID = getUserID();
 $isAdmin = isUserAdmin();
 
 $message = "";
+
+//Connect To Database
+$hostname='it391test.db.8404538.hostedresource.com';
+$username='it391test';
+$password='Binoy01';
+$dbname='it391test';
+
+mysql_connect($hostname,$username, $password) OR DIE ('Unable to connect to database! Please try again later.');
+mysql_select_db($dbname);
 
 //bonus				
 function subBonus($id,$bid,$bdate)
